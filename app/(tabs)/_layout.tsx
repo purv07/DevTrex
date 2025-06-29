@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
-import { Chrome as Home, Search, Plus, Bell, CircleUserRound as User } from 'lucide-react-native';
+import { Home, Search, Plus, Bell, CircleUserRound as User } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const TabIcon = ({ icon: Icon, color, focused }) => {
@@ -48,23 +48,28 @@ export default function TabLayout() {
           shadowOffset: { width: 0, height: 10 },
           shadowOpacity: 0.3,
           shadowRadius: 20,
-          paddingHorizontal: 10,
+          // Remove horizontal padding to allow full width distribution
           paddingVertical: 8,
-          // Ensure proper centering
-          justifyContent: 'center',
+          // Ensure the tab bar itself is centered
+          flexDirection: 'row',
+          justifyContent: 'space-around',
           alignItems: 'center',
         },
         tabBarItemStyle: {
-          flex: 1,
-          alignItems: 'center',
+          // Remove flex and use fixed positioning for perfect centering
           height: '100%',
-          // Add margin for better spacing
-          marginHorizontal: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+          // Remove margins that could cause misalignment
+          margin: 0,
+          padding: 0,
+          // Ensure equal width distribution
+          flex: 1,
         },
-        // Additional styling for better icon positioning
+        // Remove icon style overrides that could interfere with centering
         tabBarIconStyle: {
-          marginTop: 10,
-          marginBottom: 0,
+          margin: 0,
+          padding: 0,
         },
       }}>
       <Tabs.Screen
@@ -127,23 +132,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
-    // Ensure perfect centering
+    // Perfect centering
     justifyContent: 'center',
     alignItems: 'center',
   },
   activeIconGradient: {
-    flex: 1,
+    width: 54,
+    height: 54,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    height: '100%',
+    borderRadius: 27,
   },
   inactiveIconContainer: {
     width: 54,
     height: 54,
     justifyContent: 'center',
     alignItems: 'center',
-    // Add subtle background for better visual balance
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 27,
   },

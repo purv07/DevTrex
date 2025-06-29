@@ -2,18 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { 
-  Bell, 
-  Search, 
-  TrendingUp, 
-  Users, 
-  Code2, 
-  MessageSquare,
-  Calendar,
-  CheckCircle,
-  ArrowRight,
-  Activity
-} from 'lucide-react-native';
+import { Bell, Search, TrendingUp, Users, Code as Code2, MessageSquare, Calendar, CircleCheck as CheckCircle, ArrowRight, Activity } from 'lucide-react-native';
 
 export default function Dashboard() {
   const stats = [

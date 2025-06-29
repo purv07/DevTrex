@@ -103,17 +103,17 @@ export default function LoginScreen() {
   const lottieScale = useSharedValue(0.8);
 
   React.useEffect(() => {
-    // Animate Lottie animation first (background)
-    lottieOpacity.value = withDelay(100, withTiming(1, { duration: 1000 }));
-    lottieScale.value = withDelay(100, withSpring(1, { damping: 15 }));
-
     // Animate title
-    titleOpacity.value = withDelay(400, withTiming(1, { duration: 800 }));
-    titleTranslateY.value = withDelay(400, withSpring(0, { damping: 12 }));
+    titleOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
+    titleTranslateY.value = withDelay(300, withSpring(0, { damping: 12 }));
 
     // Animate button section
-    buttonOpacity.value = withDelay(700, withTiming(1, { duration: 800 }));
-    buttonTranslateY.value = withDelay(700, withSpring(0, { damping: 12 }));
+    buttonOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
+    buttonTranslateY.value = withDelay(600, withSpring(0, { damping: 12 }));
+
+    // Animate Lottie animation (after button)
+    lottieOpacity.value = withDelay(900, withTiming(1, { duration: 800 }));
+    lottieScale.value = withDelay(900, withSpring(1, { damping: 12 }));
   }, []);
 
   const titleAnimatedStyle = useAnimatedStyle(() => ({
@@ -142,22 +142,21 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Lottie Animation - Fixed Background */}
-      <Animated.View style={[styles.lottieBackground, lottieAnimatedStyle]}>
-        <LottieView
-          source={require('../assets/images/Animation - 1751180980647.json')}
-          autoPlay
-          loop={false}
-          style={styles.lottieAnimation}
-          resizeMode="contain"
-        />
-      </Animated.View>
-
-      {/* Content Overlay */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.contentOverlay}
+        style={styles.keyboardView}
       >
+        {/* Lottie Animation - Background layer */}
+        <Animated.View style={[styles.lottieContainer, lottieAnimatedStyle]}>
+          <LottieView
+            source={require('../assets/images/Animation - 1751180980647.json')}
+            autoPlay
+            loop={false}
+            style={styles.lottieAnimation}
+            resizeMode="contain"
+          />
+        </Animated.View>
+
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -181,7 +180,7 @@ export default function LoginScreen() {
           {/* Spacer to push content to center */}
           <View style={styles.spacer} />
 
-          {/* Login Button Section */}
+          {/* Login Button Section - Positioned over animation */}
           <Animated.View style={[styles.buttonSection, buttonAnimatedStyle]}>
             <TouchableOpacity
               onPress={handleLogin}
@@ -207,31 +206,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0F0F0F',
-    position: 'relative',
   },
-  lottieBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 0, // Background layer
-  },
-  lottieAnimation: {
-    width: width * 1.6,
-    height: height * 0.8,
-    opacity: 0.6, // Subtle background effect
-  },
-  contentOverlay: {
+  keyboardView: {
     flex: 1,
-    zIndex: 1, // Content layer above background
+    position: 'relative',
   },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
+    zIndex: 10, // Ensure scroll content is above animation
   },
   floatingElement: {
     position: 'absolute',
@@ -274,6 +258,7 @@ const styles = StyleSheet.create({
   buttonSection: {
     alignItems: 'center',
     marginBottom: 32,
+    zIndex: 20, // Highest z-index for button
   },
   loginButton: {
     flexDirection: 'row',
@@ -288,8 +273,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
-    elevation: 12,
+    elevation: 20, // High elevation for Android
     minWidth: width * 0.6,
+    zIndex: 30, // Ensure button is on top
   },
   loginButtonLoading: {
     opacity: 0.8,
@@ -301,5 +287,18 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: height * 0.2,
+  },
+  lottieContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1, // Background layer
+  },
+  lottieAnimation: {
+    width: width * 1.4,
+    height: height * 0.5,
   },
 });

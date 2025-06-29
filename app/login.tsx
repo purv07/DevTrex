@@ -97,23 +97,23 @@ export default function LoginScreen() {
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
-  const lottieOpacity = useSharedValue(0);
-  const lottieScale = useSharedValue(0.8);
   const buttonOpacity = useSharedValue(0);
   const buttonTranslateY = useSharedValue(50);
+  const lottieOpacity = useSharedValue(0);
+  const lottieScale = useSharedValue(0.8);
 
   React.useEffect(() => {
     // Animate title
     titleOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
     titleTranslateY.value = withDelay(300, withSpring(0, { damping: 12 }));
 
-    // Animate Lottie animation
-    lottieOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
-    lottieScale.value = withDelay(600, withSpring(1, { damping: 12 }));
-
     // Animate button section
-    buttonOpacity.value = withDelay(900, withTiming(1, { duration: 800 }));
-    buttonTranslateY.value = withDelay(900, withSpring(0, { damping: 12 }));
+    buttonOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
+    buttonTranslateY.value = withDelay(600, withSpring(0, { damping: 12 }));
+
+    // Animate Lottie animation (after button)
+    lottieOpacity.value = withDelay(900, withTiming(1, { duration: 800 }));
+    lottieScale.value = withDelay(900, withSpring(1, { damping: 12 }));
   }, []);
 
   const titleAnimatedStyle = useAnimatedStyle(() => ({
@@ -121,14 +121,14 @@ export default function LoginScreen() {
     transform: [{ translateY: titleTranslateY.value }],
   }));
 
-  const lottieAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: lottieOpacity.value,
-    transform: [{ scale: lottieScale.value }],
-  }));
-
   const buttonAnimatedStyle = useAnimatedStyle(() => ({
     opacity: buttonOpacity.value,
     transform: [{ translateY: buttonTranslateY.value }],
+  }));
+
+  const lottieAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: lottieOpacity.value,
+    transform: [{ scale: lottieScale.value }],
   }));
 
   const handleLogin = async () => {
@@ -166,18 +166,8 @@ export default function LoginScreen() {
             <Text style={styles.mainTitle}>For Yourself</Text>
           </Animated.View>
 
-          {/* Lottie Animation Section */}
-          <Animated.View style={[styles.lottieSection, lottieAnimatedStyle]}>
-            <View style={styles.lottieContainer}>
-              <LottieView
-                source={require('../assets/images/Animation - 1751180980647.json')}
-                autoPlay
-                loop
-                style={styles.lottieAnimation}
-                resizeMode="contain"
-              />
-            </View>
-          </Animated.View>
+          {/* Spacer to push content to center and bottom */}
+          <View style={styles.spacer} />
 
           {/* Login Button Section */}
           <Animated.View style={[styles.buttonSection, buttonAnimatedStyle]}>
@@ -191,6 +181,17 @@ export default function LoginScreen() {
               </Text>
               {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
             </TouchableOpacity>
+          </Animated.View>
+
+          {/* Lottie Animation Section - Below Button */}
+          <Animated.View style={[styles.lottieSection, lottieAnimatedStyle]}>
+            <LottieView
+              source={require('../assets/images/Animation - 1751180980647.json')}
+              autoPlay
+              loop={false}
+              style={styles.lottieAnimation}
+              resizeMode="contain"
+            />
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -210,6 +211,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
+    paddingBottom: 40,
   },
   floatingElement: {
     position: 'absolute',
@@ -246,34 +248,12 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     lineHeight: 40,
   },
-  lottieSection: {
-    alignItems: 'center',
-    marginBottom: height * 0.08,
+  spacer: {
     flex: 1,
-    justifyContent: 'center',
-  },
-  lottieContainer: {
-    width: width * 0.8,
-    height: height * 0.35,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#FFFFFF',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 8,
-  },
-  lottieAnimation: {
-    width: '90%',
-    height: '90%',
   },
   buttonSection: {
     marginBottom: 32,
-    marginTop: 'auto',
+    alignItems: 'center',
   },
   loginButton: {
     flexDirection: 'row',
@@ -289,6 +269,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 12,
+    minWidth: width * 0.6,
   },
   loginButtonLoading: {
     opacity: 0.8,
@@ -297,5 +278,13 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
+  },
+  lottieSection: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  lottieAnimation: {
+    width: width * 0.9,
+    height: height * 0.25,
   },
 });

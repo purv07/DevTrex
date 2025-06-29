@@ -276,11 +276,7 @@ export default function LoginScreen() {
               </>
             )}
           </TouchableOpacity>
-          
-          {/* Google attribution */}
-          <Text style={styles.attributionText}>
-            Sign in with Google to continue
-          </Text>
+          <Text style={styles.attributionText}>Sign in with Google to continue</Text>
         </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>

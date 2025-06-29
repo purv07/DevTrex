@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -19,9 +20,10 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRight, Loader2 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
+import { linkedInAuth, LinkedInAuthResult } from '../services/linkedinAuth';
 
 const { width, height } = Dimensions.get('window');
 
@@ -94,6 +96,7 @@ const FloatingElements = () => {
 // --- Main Login Component ---
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
+  const [authStatus, setAuthStatus] = useState<string>('');
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
@@ -131,13 +134,74 @@ export default function LoginScreen() {
     transform: [{ scale: lottieScale.value }],
   }));
 
-  const handleLogin = async () => {
-    setIsLoading(true);
-    // Simulate login process
-    setTimeout(() => {
+  const handleLinkedInLogin = async () => {
+    try {
+      setIsLoading(true);
+      setAuthStatus('Connecting to LinkedIn...');
+
+      console.log('Starting LinkedIn authentication...');
+      
+      const result: LinkedInAuthResult = await linkedInAuth.signInWithLinkedIn();
+      
+      console.log('LinkedIn auth result:', result);
+
+      if (result.success && result.user) {
+        setAuthStatus('Authentication successful!');
+        
+        // Show success message
+        if (Platform.OS !== 'web') {
+          Alert.alert(
+            'Welcome!',
+            `Hello ${result.user.name}! You have successfully signed in with LinkedIn.`,
+            [
+              {
+                text: 'Continue',
+                onPress: () => router.replace('/(tabs)'),
+              },
+            ]
+          );
+        } else {
+          // For web, show a simple alert
+          alert(`Welcome ${result.user.name}! Authentication successful.`);
+          setTimeout(() => {
+            router.replace('/(tabs)');
+          }, 1000);
+        }
+      } else {
+        setAuthStatus('Authentication failed');
+        
+        const errorMessage = result.error || 'Unknown error occurred';
+        console.error('LinkedIn authentication failed:', errorMessage);
+        
+        if (Platform.OS !== 'web') {
+          Alert.alert(
+            'Authentication Failed',
+            errorMessage,
+            [{ text: 'Try Again', style: 'default' }]
+          );
+        } else {
+          alert(`Authentication failed: ${errorMessage}`);
+        }
+      }
+    } catch (error) {
+      console.error('LinkedIn login error:', error);
+      setAuthStatus('Authentication error');
+      
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      
+      if (Platform.OS !== 'web') {
+        Alert.alert(
+          'Error',
+          errorMessage,
+          [{ text: 'OK', style: 'default' }]
+        );
+      } else {
+        alert(`Error: ${errorMessage}`);
+      }
+    } finally {
       setIsLoading(false);
-      router.replace('/(tabs)');
-    }, 2000);
+      setTimeout(() => setAuthStatus(''), 3000);
+    }
   };
 
   return (
@@ -175,7 +239,22 @@ export default function LoginScreen() {
               </View>
             </View>
             <Text style={styles.mainTitle}>For Yourself</Text>
+            
+            {/* LinkedIn branding */}
+            <View style={styles.linkedinBranding}>
+              <Text style={styles.linkedinText}>Powered by</Text>
+              <View style={styles.linkedinLogo}>
+                <Text style={styles.linkedinLogoText}>in</Text>
+              </View>
+            </View>
           </Animated.View>
+
+          {/* Status Message */}
+          {authStatus && (
+            <View style={styles.statusContainer}>
+              <Text style={styles.statusText}>{authStatus}</Text>
+            </View>
+          )}
 
           {/* Spacer to push content to center */}
           <View style={styles.spacer} />
@@ -184,15 +263,27 @@ export default function LoginScreen() {
         {/* Fixed Button at Bottom - Positioned over animation */}
         <Animated.View style={[styles.fixedButtonContainer, buttonAnimatedStyle]}>
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={handleLinkedInLogin}
             style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
             disabled={isLoading}
           >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? 'Signing In...' : 'Start Now'}
-            </Text>
-            {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
+            {isLoading ? (
+              <>
+                <Loader2 size={20} color="#0F0F0F" style={styles.loadingIcon} />
+                <Text style={styles.loginButtonText}>Connecting...</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.loginButtonText}>Start Now</Text>
+                <ArrowRight size={20} color="#0F0F0F" />
+              </>
+            )}
           </TouchableOpacity>
+          
+          {/* LinkedIn attribution */}
+          <Text style={styles.attributionText}>
+            Sign in with LinkedIn to continue
+          </Text>
         </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -212,7 +303,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
-    paddingBottom: 120, // Add padding to account for fixed button
+    paddingBottom: 140, // Add padding to account for fixed button
     zIndex: 10, // Ensure scroll content is above animation
   },
   floatingElement: {
@@ -249,6 +340,45 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     color: '#0F0F0F',
     lineHeight: 40,
+  },
+  linkedinBranding: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    gap: 8,
+  },
+  linkedinText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+  },
+  linkedinLogo: {
+    backgroundColor: '#0077B5',
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  linkedinLogoText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: 'Poppins-Bold',
+  },
+  statusContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  statusText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    textAlign: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
   spacer: {
     flex: 1,
@@ -289,6 +419,17 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
+  },
+  loadingIcon: {
+    // Add rotation animation for loading icon
+    transform: [{ rotate: '0deg' }],
+  },
+  attributionText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
+    marginTop: 12,
   },
   lottieContainer: {
     position: 'absolute',

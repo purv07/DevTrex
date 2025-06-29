@@ -34,7 +34,17 @@
       "output": "single",
       "favicon": "./assets/images/new-logo.png"
     },
-    "plugins": ["expo-router", "expo-font", "expo-web-browser"],
+    "plugins": [
+      "expo-router", 
+      "expo-font", 
+      "expo-web-browser",
+      [
+        "expo-auth-session",
+        {
+          "schemes": ["devtrex"]
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     }

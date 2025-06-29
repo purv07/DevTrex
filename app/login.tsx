@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Platform,
   SafeAreaView,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
@@ -22,45 +21,9 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight } from 'lucide-react-native';
 import { router } from 'expo-router';
+import LottieView from 'lottie-react-native';
 
 const { width, height } = Dimensions.get('window');
-
-// --- Social Login Button Component ---
-const SocialButton = ({ icon, onPress, delay = 0 }) => {
-  const scale = useSharedValue(0);
-  const opacity = useSharedValue(0);
-
-  React.useEffect(() => {
-    scale.value = withDelay(
-      delay,
-      withSpring(1, {
-        damping: 12,
-        stiffness: 100,
-      })
-    );
-    opacity.value = withDelay(delay, withTiming(1, { duration: 300 }));
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  const handlePress = () => {
-    scale.value = withSpring(0.95, { duration: 100 }, () => {
-      scale.value = withSpring(1, { duration: 100 });
-    });
-    onPress?.();
-  };
-
-  return (
-    <Animated.View style={animatedStyle}>
-      <TouchableOpacity onPress={handlePress} style={styles.socialButton}>
-        <Image source={icon} style={styles.socialIcon} resizeMode="contain" />
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
 
 // --- Floating Elements Component ---
 const FloatingElements = () => {
@@ -134,8 +97,8 @@ export default function LoginScreen() {
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
-  const socialOpacity = useSharedValue(0);
-  const socialTranslateY = useSharedValue(30);
+  const lottieOpacity = useSharedValue(0);
+  const lottieScale = useSharedValue(0.8);
   const buttonOpacity = useSharedValue(0);
   const buttonTranslateY = useSharedValue(50);
 
@@ -144,9 +107,9 @@ export default function LoginScreen() {
     titleOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
     titleTranslateY.value = withDelay(300, withSpring(0, { damping: 12 }));
 
-    // Animate social section
-    socialOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
-    socialTranslateY.value = withDelay(600, withSpring(0, { damping: 12 }));
+    // Animate Lottie animation
+    lottieOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
+    lottieScale.value = withDelay(600, withSpring(1, { damping: 12 }));
 
     // Animate button section
     buttonOpacity.value = withDelay(900, withTiming(1, { duration: 800 }));
@@ -158,9 +121,9 @@ export default function LoginScreen() {
     transform: [{ translateY: titleTranslateY.value }],
   }));
 
-  const socialAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: socialOpacity.value,
-    transform: [{ translateY: socialTranslateY.value }],
+  const lottieAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: lottieOpacity.value,
+    transform: [{ scale: lottieScale.value }],
   }));
 
   const buttonAnimatedStyle = useAnimatedStyle(() => ({
@@ -175,12 +138,6 @@ export default function LoginScreen() {
       setIsLoading(false);
       router.replace('/(tabs)');
     }, 2000);
-  };
-
-  const handleSocialLogin = (provider) => {
-    console.log(`Login with ${provider}`);
-    // Implement social login logic here
-    handleLogin();
   };
 
   return (
@@ -209,43 +166,15 @@ export default function LoginScreen() {
             <Text style={styles.mainTitle}>For Yourself</Text>
           </Animated.View>
 
-          {/* Social Login Section */}
-          <Animated.View style={[styles.socialSection, socialAnimatedStyle]}>
-            <View style={styles.socialGrid}>
-              <SocialButton
-                icon={{ uri: 'https://developers.google.com/identity/images/g-logo.png' }}
-                onPress={() => handleSocialLogin('Google')}
-                delay={0}
-              />
-              <SocialButton
-                icon={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1024px-Facebook_f_logo_%282019%29.svg.png' }}
-                onPress={() => handleSocialLogin('Facebook')}
-                delay={100}
-              />
-              <SocialButton
-                icon={{ uri: 'https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg' }}
-                onPress={() => handleSocialLogin('LinkedIn')}
-                delay={200}
-              />
-              <SocialButton
-                icon={{ uri: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png' }}
-                onPress={() => handleSocialLogin('GitHub')}
-                delay={300}
-              />
-              <SocialButton
-                icon={{ uri: 'https://telegram.org/img/t_logo.png' }}
-                onPress={() => handleSocialLogin('Telegram')}
-                delay={400}
-              />
-              <SocialButton
-                icon={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1024px-Google_Chrome_icon_%28February_2022%29.svg.png' }}
-                onPress={() => handleSocialLogin('Chrome')}
-                delay={500}
-              />
-              <SocialButton
-                icon={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/1024px-Microsoft_logo.svg.png' }}
-                onPress={() => handleSocialLogin('Microsoft')}
-                delay={600}
+          {/* Lottie Animation Section */}
+          <Animated.View style={[styles.lottieSection, lottieAnimatedStyle]}>
+            <View style={styles.lottieContainer}>
+              <LottieView
+                source={require('../assets/images/Animation - 1751180980647.json')}
+                autoPlay
+                loop
+                style={styles.lottieAnimation}
+                resizeMode="contain"
               />
             </View>
           </Animated.View>
@@ -291,7 +220,7 @@ const styles = StyleSheet.create({
   headerSection: {
     alignItems: 'center',
     marginTop: height * 0.08,
-    marginBottom: height * 0.08,
+    marginBottom: height * 0.06,
   },
   mainTitle: {
     fontSize: 32,
@@ -317,34 +246,30 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     lineHeight: 40,
   },
-  socialSection: {
+  lottieSection: {
     alignItems: 'center',
-    marginBottom: height * 0.1,
+    marginBottom: height * 0.08,
+    flex: 1,
+    justifyContent: 'center',
   },
-  socialGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  lottieContainer: {
+    width: width * 0.8,
+    height: height * 0.35,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 20,
-    maxWidth: width * 0.8,
-  },
-  socialButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowColor: '#FFFFFF',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
     elevation: 8,
   },
-  socialIcon: {
-    width: 32,
-    height: 32,
+  lottieAnimation: {
+    width: '90%',
+    height: '90%',
   },
   buttonSection: {
     marginBottom: 32,

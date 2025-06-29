@@ -1,63 +1,87 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
-import { Home, Search, Plus, Bell, CircleUserRound as User } from 'lucide-react-native';
+import { Chrome as Home, Search, Plus, Bell, User } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-// Component for rendering each tab icon
 const TabIcon = ({ icon: Icon, color, focused }) => {
-  // If the tab is focused (active)
   if (focused) {
     return (
-      // Container for the active icon with a shadow
       <View style={styles.activeIconContainer}>
         <LinearGradient
-          // A vibrant purple gradient for the background
-          colors={['#A855F7', '#8B5CF6']}
+          colors={['#6366F1', '#8B5CF6']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={styles.activeIconGradient}
         >
-          {/* The icon itself, white and bold */}
-          <Icon size={28} color="#FFFFFF" strokeWidth={2.5} />
+          <Icon size={22} color="#FFFFFF" strokeWidth={2.5} />
         </LinearGradient>
       </View>
     );
   }
 
-  // If the tab is not focused (inactive)
   return (
-    // A simple container to ensure the icon is vertically centered
     <View style={styles.inactiveIconContainer}>
-      {/* The icon uses the color provided by tabBarInactiveTintColor */}
-      <Icon size={28} color={color} strokeWidth={2} />
+      <Icon size={22} color={color} strokeWidth={2} />
     </View>
   );
 };
 
-// The main layout component for the tabs
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: '#FFFFFF', // Not used directly, but good practice
-        tabBarInactiveTintColor: '#FFFFFF', // Makes inactive icons white
-        
-        // --- CORRECTED TAB BAR STYLE ---
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarStyle: {
           position: 'absolute',
-          bottom: Platform.select({ ios: 30, android: 20 }),
+          bottom: Platform.select({
+            ios: 34,
+            android: 20,
+            web: 20,
+          }),
           left: 20,
           right: 20,
-          height: 65,
+          height: 70,
           backgroundColor: '#000000',
-          borderRadius: 32.5, // Half of height for a perfect pill shape
-          borderTopWidth: 0, // No top border needed
-          elevation: 20,
+          borderRadius: 35,
+          borderWidth: 0,
+          elevation: 25,
           shadowColor: '#000000',
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.3,
-          shadowRadius: 20,
+          shadowOffset: { width: 0, height: 15 },
+          shadowOpacity: 0.4,
+          shadowRadius: 25,
+          // Remove horizontal padding to allow full width distribution
+          paddingHorizontal: 0,
+          paddingVertical: 0,
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(255, 255, 255, 0.1)',
+          // Ensure proper flex distribution
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
         },
+        tabBarItemStyle: {
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 70,
+          // Remove margins to allow even distribution
+          marginHorizontal: 0,
+          // Ensure each tab takes equal space
+          minWidth: 0,
+        },
+        tabBarBackground: () => (
+          <View style={styles.tabBarBackground}>
+            <LinearGradient
+              colors={['rgba(0, 0, 0, 0.95)', 'rgba(20, 20, 20, 0.95)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.tabBarGradient}
+            />
+          </View>
+        ),
       }}>
       <Tabs.Screen
         name="index"
@@ -108,31 +132,51 @@ export default function TabLayout() {
   );
 }
 
-// --- CLEANED UP STYLES ---
 const styles = StyleSheet.create({
-  activeIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // Add a subtle shadow to the active icon itself to make it pop
-    shadowColor: '#A855F7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.6,
-    shadowRadius: 10,
-    elevation: 10,
+  tabBarBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 35,
+    overflow: 'hidden',
   },
+  tabBarGradient: {
+    flex: 1,
+    borderRadius: 35,
+  },
+  activeIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: 'hidden',
+    elevation: 12,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    borderWidth: 2,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
+  },
+  
   activeIconGradient: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 24,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
   },
   inactiveIconContainer: {
-    // This container just ensures the icon is centered in its space
+    width: 50,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

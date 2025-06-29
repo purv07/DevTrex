@@ -58,6 +58,7 @@ export default function TabLayout() {
             android: 20,
             web: 20,
           }),
+          left: 20,
           right: 20,
           height: 70,
           backgroundColor: '#000000',
@@ -79,7 +80,7 @@ export default function TabLayout() {
           alignItems: 'center',
         },
         tabBarItemStyle: {
-          flex: 1,
+          
           alignItems: 'center',
           justifyContent: 'center',
           height: 70,

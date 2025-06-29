@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Platform,
   SafeAreaView,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -151,40 +153,52 @@ export default function LoginScreen() {
         />
       </Animated.View>
 
-      {/* Content Container */}
-      <View style={styles.contentContainer}>
-        {/* Floating Background Elements */}
-        <FloatingElements />
+      {/* Content Overlay */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.contentOverlay}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Floating Background Elements */}
+          <FloatingElements />
 
-        {/* Header Section - Top Area */}
-        <Animated.View style={[styles.headerSection, titleAnimatedStyle]}>
-          <Text style={styles.mainTitle}>Create A</Text>
-          <View style={styles.titleRow}>
-            <Text style={styles.mainTitle}>Better </Text>
-            <View style={styles.highlightContainer}>
-              <Text style={styles.highlightText}>Future</Text>
+          {/* Header Section */}
+          <Animated.View style={[styles.headerSection, titleAnimatedStyle]}>
+            <Text style={styles.mainTitle}>Create A</Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.mainTitle}>Better </Text>
+              <View style={styles.highlightContainer}>
+                <Text style={styles.highlightText}>Future</Text>
+              </View>
             </View>
-          </View>
-          <Text style={styles.mainTitle}>For Yourself</Text>
-        </Animated.View>
+            <Text style={styles.mainTitle}>For Yourself</Text>
+          </Animated.View>
 
-        {/* Spacer to push button to bottom */}
-        <View style={styles.flexSpacer} />
+          {/* Spacer to push content to center */}
+          <View style={styles.spacer} />
 
-        {/* Login Button Section - Bottom Area */}
-        <Animated.View style={[styles.buttonSection, buttonAnimatedStyle]}>
-          <TouchableOpacity
-            onPress={handleLogin}
-            style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
-            disabled={isLoading}
-          >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? 'Signing In...' : 'Start Now'}
-            </Text>
-            {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
+          {/* Login Button Section */}
+          <Animated.View style={[styles.buttonSection, buttonAnimatedStyle]}>
+            <TouchableOpacity
+              onPress={handleLogin}
+              style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
+              disabled={isLoading}
+            >
+              <Text style={styles.loginButtonText}>
+                {isLoading ? 'Signing In...' : 'Start Now'}
+              </Text>
+              {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* Bottom spacer for scroll content */}
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -206,13 +220,16 @@ const styles = StyleSheet.create({
     zIndex: 0, // Background layer
   },
   lottieAnimation: {
-    width: width * 1.8,
-    height: height * 0.9,
-    opacity: 0.4, // More subtle background effect
+    width: width * 1.6,
+    height: height * 0.8,
+    opacity: 0.6, // Subtle background effect
   },
-  contentContainer: {
+  contentOverlay: {
     flex: 1,
     zIndex: 1, // Content layer above background
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
   },
@@ -224,7 +241,8 @@ const styles = StyleSheet.create({
   },
   headerSection: {
     alignItems: 'center',
-    marginTop: height * 0.12,
+    marginTop: height * 0.08,
+    marginBottom: height * 0.06,
   },
   mainTitle: {
     fontSize: 32,
@@ -250,39 +268,38 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     lineHeight: 40,
   },
-  flexSpacer: {
-    flex: 1, // This pushes the button to the bottom
+  spacer: {
+    flex: 1,
   },
   buttonSection: {
     alignItems: 'center',
-    paddingBottom: Platform.OS === 'ios' ? 34 : 24, // Safe area padding
-    marginBottom: 20,
+    marginBottom: 32,
   },
   loginButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    paddingVertical: 20,
-    paddingHorizontal: 40,
-    borderRadius: 30,
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    borderRadius: 25,
     gap: 12,
     shadowColor: '#FFFFFF',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 15,
-    minWidth: width * 0.7,
-    // Enhanced button styling for prominence
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+    minWidth: width * 0.6,
   },
   loginButtonLoading: {
     opacity: 0.8,
   },
   loginButtonText: {
     color: '#0F0F0F',
-    fontSize: 18,
-    fontFamily: 'Poppins-Bold',
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  bottomSpacer: {
+    height: height * 0.2,
   },
 });

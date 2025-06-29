@@ -262,7 +262,7 @@ export default function AnimatedSplashScreen({ onAnimationFinish }) {
     return (
       <View style={styles.logoWrapper}>
         <Image
-          source={require('../assets/images/Blue White Professional Minimal Brand Logo.png')}
+          source={require('../assets/images/blue-white-logo.png')}
           style={styles.logo}
           resizeMode="contain"
           onError={handleImageError}

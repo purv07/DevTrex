@@ -27,7 +27,7 @@ export default function Dashboard() {
           <View style={styles.headerLeft}>
             <View style={styles.logoContainer}>
               <Image
-                source={require('../../assets/images/Blue White Professional Minimal Brand Logo.png')}
+                source={require('../../assets/images/blue-white-logo.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />

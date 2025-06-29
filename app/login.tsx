@@ -179,24 +179,21 @@ export default function LoginScreen() {
 
           {/* Spacer to push content to center */}
           <View style={styles.spacer} />
-
-          {/* Login Button Section - Positioned over animation */}
-          <Animated.View style={[styles.buttonSection, buttonAnimatedStyle]}>
-            <TouchableOpacity
-              onPress={handleLogin}
-              style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
-              disabled={isLoading}
-            >
-              <Text style={styles.loginButtonText}>
-                {isLoading ? 'Signing In...' : 'Start Now'}
-              </Text>
-              {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
-            </TouchableOpacity>
-          </Animated.View>
-
-          {/* Bottom spacer for scroll content */}
-          <View style={styles.bottomSpacer} />
         </ScrollView>
+
+        {/* Fixed Button at Bottom - Positioned over animation */}
+        <Animated.View style={[styles.fixedButtonContainer, buttonAnimatedStyle]}>
+          <TouchableOpacity
+            onPress={handleLogin}
+            style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
+            disabled={isLoading}
+          >
+            <Text style={styles.loginButtonText}>
+              {isLoading ? 'Signing In...' : 'Start Now'}
+            </Text>
+            {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
+          </TouchableOpacity>
+        </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -215,6 +212,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
+    paddingBottom: 120, // Add padding to account for fixed button
     zIndex: 10, // Ensure scroll content is above animation
   },
   floatingElement: {
@@ -255,10 +253,17 @@ const styles = StyleSheet.create({
   spacer: {
     flex: 1,
   },
-  buttonSection: {
+  fixedButtonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 24,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 24, // Account for safe area
+    paddingTop: 20,
     alignItems: 'center',
-    marginBottom: 32,
-    zIndex: 20, // Highest z-index for button
+    zIndex: 50, // Highest z-index to ensure it's on top
+    backgroundColor: 'transparent',
   },
   loginButton: {
     flexDirection: 'row',
@@ -275,7 +280,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 20, // High elevation for Android
     minWidth: width * 0.6,
-    zIndex: 30, // Ensure button is on top
+    zIndex: 60, // Ensure button is on top
   },
   loginButtonLoading: {
     opacity: 0.8,
@@ -284,9 +289,6 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
-  },
-  bottomSpacer: {
-    height: height * 0.2,
   },
   lottieContainer: {
     position: 'absolute',

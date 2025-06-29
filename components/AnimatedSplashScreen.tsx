@@ -258,16 +258,10 @@ export default function AnimatedSplashScreen({ onAnimationFinish }) {
       );
     }
 
-    // Try multiple image sources as fallback
-    const logoSources = [
-      require('../assets/images/app-icon.png'),
-      // Add a fallback URI if needed
-      { uri: 'https://via.placeholder.com/120x120/6A0DAD/FFFFFF?text=DevTrex' }
-    ];
-
+    // Use the new logo
     return (
       <Image
-        source={logoSources[0]}
+        source={require('../assets/images/Blue White Professional Minimal Brand Logo.png')}
         style={styles.logo}
         resizeMode="contain"
         onError={handleImageError}
@@ -281,10 +275,10 @@ export default function AnimatedSplashScreen({ onAnimationFinish }) {
 
   return (
     <View style={styles.container}>
-      {/* Animated Background */}
+      {/* Animated Background - Updated to match new logo colors */}
       <Animated.View style={[StyleSheet.absoluteFill, backgroundStyle]}>
         <LinearGradient
-          colors={['#8B5CF6', '#6A0DAD', '#4C1D95']}
+          colors={['#3B4EF6', '#2563EB', '#1D4ED8']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
@@ -349,7 +343,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#6A0DAD',
+    backgroundColor: '#3B4EF6',
   },
   gradient: {
     flex: 1,

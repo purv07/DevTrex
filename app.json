@@ -4,35 +4,35 @@
     "slug": "devtrex-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon.png",
+    "icon": "./assets/images/Blue White Professional Minimal Brand Logo.png",
     "scheme": "devtrex",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/app-icon.png",
+      "image": "./assets/images/Blue White Professional Minimal Brand Logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#6A0DAD",
+      "backgroundColor": "#3B4EF6",
       "hideExpoLoadingScreen": false
     },
     "ios": {
       "supportsTablet": true,
       "splash": {
-        "image": "./assets/images/app-icon.png",
+        "image": "./assets/images/Blue White Professional Minimal Brand Logo.png",
         "resizeMode": "contain",
-        "backgroundColor": "#6A0DAD"
+        "backgroundColor": "#3B4EF6"
       }
     },
     "android": {
       "splash": {
-        "image": "./assets/images/app-icon.png",
+        "image": "./assets/images/Blue White Professional Minimal Brand Logo.png",
         "resizeMode": "contain",
-        "backgroundColor": "#6A0DAD"
+        "backgroundColor": "#3B4EF6"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/app-icon.png"
+      "favicon": "./assets/images/Blue White Professional Minimal Brand Logo.png"
     },
     "plugins": ["expo-router", "expo-font", "expo-web-browser"],
     "experiments": {

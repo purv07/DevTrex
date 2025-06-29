@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
-import { Chrome as Home, Search, Plus, Bell, User } from 'lucide-react-native';
+import { Home, Search, Plus, Bell, CircleUserRound as User } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const TabIcon = ({ icon: Icon, color, focused }) => {
@@ -33,14 +33,14 @@ export default function TabLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarInactiveTintColor: '#E5E7EB', // Lighter gray for inactive icons
         tabBarStyle: {
           position: 'absolute',
           bottom: 30,
           left: 20,
           right: 20,
           height: 70,
-          backgroundColor: '#1F2937',
+          backgroundColor: '#000000', // Changed to black
           borderRadius: 35,
           borderWidth: 0,
           elevation: 20,

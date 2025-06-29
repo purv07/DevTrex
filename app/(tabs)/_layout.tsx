@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
-import { Home, Search, Plus, Bell, User } from 'lucide-react-native';
+import { Chrome as Home, Search, Plus, Bell, User } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const TabIcon = ({ icon: Icon, color, focused }) => {

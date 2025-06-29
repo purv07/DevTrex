@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Heart, 
-  MessageCircle, 
-  UserPlus, 
-  Share, 
-  Bell, 
-  Settings,
-  MoreHorizontal,
-  Check
-} from 'lucide-react-native';
+import { Heart, MessageCircle, UserPlus, Share, Bell, Settings, MoveHorizontal as MoreHorizontal, Check } from 'lucide-react-native';
 
 export default function NotificationsScreen() {
   const [selectedTab, setSelectedTab] = useState('all');

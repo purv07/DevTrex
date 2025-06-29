@@ -166,7 +166,7 @@ export default function LoginScreen() {
             <Text style={styles.mainTitle}>For Yourself</Text>
           </Animated.View>
 
-          {/* Spacer to push content to center and bottom */}
+          {/* Spacer to push content to center */}
           <View style={styles.spacer} />
 
           {/* Login Button Section */}
@@ -183,17 +183,20 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Lottie Animation Section - Below Button */}
-          <Animated.View style={[styles.lottieSection, lottieAnimatedStyle]}>
-            <LottieView
-              source={require('../assets/images/Animation - 1751180980647.json')}
-              autoPlay
-              loop={false}
-              style={styles.lottieAnimation}
-              resizeMode="contain"
-            />
-          </Animated.View>
+          {/* Bottom spacer for scroll content */}
+          <View style={styles.bottomSpacer} />
         </ScrollView>
+
+        {/* Lottie Animation - Absolutely positioned under button */}
+        <Animated.View style={[styles.lottieContainer, lottieAnimatedStyle]}>
+          <LottieView
+            source={require('../assets/images/Animation - 1751180980647.json')}
+            autoPlay
+            loop={false}
+            style={styles.lottieAnimation}
+            resizeMode="contain"
+          />
+        </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -211,7 +214,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
-    paddingBottom: 40,
   },
   floatingElement: {
     position: 'absolute',
@@ -252,8 +254,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonSection: {
-    marginBottom: 32,
     alignItems: 'center',
+    marginBottom: 32,
   },
   loginButton: {
     flexDirection: 'row',
@@ -270,6 +272,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
     minWidth: width * 0.6,
+    zIndex: 10,
   },
   loginButtonLoading: {
     opacity: 0.8,
@@ -279,12 +282,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
   },
-  lottieSection: {
+  bottomSpacer: {
+    height: height * 0.2,
+  },
+  lottieContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    zIndex: 5,
   },
   lottieAnimation: {
-    width: width * 0.9,
-    height: height * 0.25,
+    width: width * 1.2,
+    height: height * 0.4,
   },
 });

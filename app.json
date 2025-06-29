@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "DevTrex",
+    "slug": "devtrex-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/app-icon.png",
+    "scheme": "devtrex",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/app-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6A0DAD",
+      "hideExpoLoadingScreen": false
+    },
+    "ios": {
+      "supportsTablet": true,
+      "splash": {
+        "image": "./assets/images/app-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#6A0DAD"
+      }
+    },
+    "android": {
+      "splash": {
+        "image": "./assets/images/app-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#6A0DAD"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/app-icon.png"
+    },
+    "plugins": ["expo-router", "expo-font", "expo-web-browser"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

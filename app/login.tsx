@@ -8,7 +8,6 @@ import {
   Platform,
   SafeAreaView,
   Image,
-  TextInput,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
@@ -21,7 +20,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
+import { ArrowRight } from 'lucide-react-native';
 import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
@@ -131,30 +130,27 @@ const FloatingElements = () => {
 
 // --- Main Login Component ---
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
-  const formOpacity = useSharedValue(0);
-  const formTranslateY = useSharedValue(50);
   const socialOpacity = useSharedValue(0);
   const socialTranslateY = useSharedValue(30);
+  const buttonOpacity = useSharedValue(0);
+  const buttonTranslateY = useSharedValue(50);
 
   React.useEffect(() => {
     // Animate title
     titleOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
     titleTranslateY.value = withDelay(300, withSpring(0, { damping: 12 }));
 
-    // Animate form
-    formOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
-    formTranslateY.value = withDelay(600, withSpring(0, { damping: 12 }));
-
     // Animate social section
-    socialOpacity.value = withDelay(900, withTiming(1, { duration: 800 }));
-    socialTranslateY.value = withDelay(900, withSpring(0, { damping: 12 }));
+    socialOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
+    socialTranslateY.value = withDelay(600, withSpring(0, { damping: 12 }));
+
+    // Animate button section
+    buttonOpacity.value = withDelay(900, withTiming(1, { duration: 800 }));
+    buttonTranslateY.value = withDelay(900, withSpring(0, { damping: 12 }));
   }, []);
 
   const titleAnimatedStyle = useAnimatedStyle(() => ({
@@ -162,14 +158,14 @@ export default function LoginScreen() {
     transform: [{ translateY: titleTranslateY.value }],
   }));
 
-  const formAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: formOpacity.value,
-    transform: [{ translateY: formTranslateY.value }],
-  }));
-
   const socialAnimatedStyle = useAnimatedStyle(() => ({
     opacity: socialOpacity.value,
     transform: [{ translateY: socialTranslateY.value }],
+  }));
+
+  const buttonAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: buttonOpacity.value,
+    transform: [{ translateY: buttonTranslateY.value }],
   }));
 
   const handleLogin = async () => {
@@ -184,6 +180,7 @@ export default function LoginScreen() {
   const handleSocialLogin = (provider) => {
     console.log(`Login with ${provider}`);
     // Implement social login logic here
+    handleLogin();
   };
 
   return (
@@ -253,70 +250,17 @@ export default function LoginScreen() {
             </View>
           </Animated.View>
 
-          {/* Login Form Section */}
-          <Animated.View style={[styles.formSection, formAnimatedStyle]}>
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>Or continue with email</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <View style={styles.inputWrapper}>
-                <Mail size={20} color="#9CA3AF" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Enter your email"
-                  placeholderTextColor="#9CA3AF"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-
-              <View style={styles.inputWrapper}>
-                <Lock size={20} color="#9CA3AF" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Enter your password"
-                  placeholderTextColor="#9CA3AF"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeIcon}
-                >
-                  {showPassword ? (
-                    <EyeOff size={20} color="#9CA3AF" />
-                  ) : (
-                    <Eye size={20} color="#9CA3AF" />
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </Animated.View>
-
-          {/* Start Button */}
-          <Animated.View style={[styles.buttonSection, formAnimatedStyle]}>
+          {/* Login Button Section */}
+          <Animated.View style={[styles.buttonSection, buttonAnimatedStyle]}>
             <TouchableOpacity
               onPress={handleLogin}
-              style={[styles.startButton, isLoading && styles.startButtonLoading]}
+              style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
               disabled={isLoading}
             >
-              <Text style={styles.startButtonText}>
+              <Text style={styles.loginButtonText}>
                 {isLoading ? 'Signing In...' : 'Start Now'}
               </Text>
-              {!isLoading && <ArrowRight size={20} color="#FFFFFF" />}
+              {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
             </TouchableOpacity>
 
             <View style={styles.signupContainer}>
@@ -354,7 +298,7 @@ const styles = StyleSheet.create({
   headerSection: {
     alignItems: 'center',
     marginTop: height * 0.08,
-    marginBottom: height * 0.06,
+    marginBottom: height * 0.08,
   },
   mainTitle: {
     fontSize: 32,
@@ -382,20 +326,20 @@ const styles = StyleSheet.create({
   },
   socialSection: {
     alignItems: 'center',
-    marginBottom: height * 0.05,
+    marginBottom: height * 0.1,
   },
   socialGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 16,
-    maxWidth: width * 0.7,
+    gap: 20,
+    maxWidth: width * 0.8,
   },
   socialButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -406,66 +350,14 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   socialIcon: {
-    width: 28,
-    height: 28,
-  },
-  formSection: {
-    marginBottom: 32,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  dividerText: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginHorizontal: 16,
-  },
-  inputContainer: {
-    gap: 16,
-    marginBottom: 16,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    color: '#FFFFFF',
-  },
-  eyeIcon: {
-    padding: 4,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-  },
-  forgotPasswordText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium',
+    width: 32,
+    height: 32,
   },
   buttonSection: {
     marginBottom: 32,
+    marginTop: 'auto',
   },
-  startButton: {
+  loginButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -481,10 +373,10 @@ const styles = StyleSheet.create({
     elevation: 12,
     marginBottom: 24,
   },
-  startButtonLoading: {
+  loginButtonLoading: {
     opacity: 0.8,
   },
-  startButtonText: {
+  loginButtonText: {
     color: '#0F0F0F',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',

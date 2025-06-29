@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/images/Blue White Professional Minimal Brand Logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#3B4EF6",
+      "backgroundColor": "#4F46E5",
       "hideExpoLoadingScreen": false
     },
     "ios": {
@@ -19,14 +19,14 @@
       "splash": {
         "image": "./assets/images/Blue White Professional Minimal Brand Logo.png",
         "resizeMode": "contain",
-        "backgroundColor": "#3B4EF6"
+        "backgroundColor": "#4F46E5"
       }
     },
     "android": {
       "splash": {
         "image": "./assets/images/Blue White Professional Minimal Brand Logo.png",
         "resizeMode": "contain",
-        "backgroundColor": "#3B4EF6"
+        "backgroundColor": "#4F46E5"
       }
     },
     "web": {

@@ -258,27 +258,28 @@ export default function AnimatedSplashScreen({ onAnimationFinish }) {
       );
     }
 
-    // Use the new logo
+    // Use the new logo with rounded container
     return (
-      <Image
-        source={require('../assets/images/Blue White Professional Minimal Brand Logo.png')}
-        style={styles.logo}
-        resizeMode="contain"
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-        // Add these props for better loading on mobile
-        fadeDuration={300}
-        loadingIndicatorSource={{ uri: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' }}
-      />
+      <View style={styles.logoWrapper}>
+        <Image
+          source={require('../assets/images/Blue White Professional Minimal Brand Logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+          onError={handleImageError}
+          onLoad={handleImageLoad}
+          fadeDuration={300}
+          loadingIndicatorSource={{ uri: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' }}
+        />
+      </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      {/* Animated Background - Updated to match new logo colors */}
+      {/* Animated Background with logo-inspired gradient */}
       <Animated.View style={[StyleSheet.absoluteFill, backgroundStyle]}>
         <LinearGradient
-          colors={['#3B4EF6', '#2563EB', '#1D4ED8']}
+          colors={['#4F46E5', '#3B82F6', '#2563EB']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#3B4EF6',
+    backgroundColor: '#4F46E5',
   },
   gradient: {
     flex: 1,
@@ -380,9 +381,9 @@ const styles = StyleSheet.create({
   },
   glowEffect: {
     position: 'absolute',
-    width: Platform.select({ web: 160, default: 130 }),
-    height: Platform.select({ web: 160, default: 130 }),
-    borderRadius: Platform.select({ web: 80, default: 65 }),
+    width: Platform.select({ web: 200, default: 170 }),
+    height: Platform.select({ web: 200, default: 170 }),
+    borderRadius: Platform.select({ web: 100, default: 85 }),
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: '#FFFFFF',
     shadowOffset: { width: 0, height: 0 },
@@ -390,37 +391,50 @@ const styles = StyleSheet.create({
     shadowRadius: 30,
     elevation: 15,
   },
+  logoWrapper: {
+    width: Platform.select({ web: 160, default: 140 }),
+    height: Platform.select({ web: 160, default: 140 }),
+    borderRadius: Platform.select({ web: 32, default: 28 }),
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
+    zIndex: 2,
+  },
   logo: {
     width: Platform.select({ web: 120, default: 100 }),
     height: Platform.select({ web: 120, default: 100 }),
-    zIndex: 2,
   },
   fallbackLogo: {
-    width: Platform.select({ web: 120, default: 100 }),
-    height: Platform.select({ web: 120, default: 100 }),
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 20,
+    width: Platform.select({ web: 160, default: 140 }),
+    height: Platform.select({ web: 160, default: 140 }),
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: Platform.select({ web: 32, default: 28 }),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(79, 70, 229, 0.3)',
     zIndex: 2,
   },
   fallbackLogoText: {
-    color: '#FFFFFF',
+    color: '#4F46E5',
     fontSize: Platform.select({ web: 18, default: 16 }),
     fontWeight: 'bold',
     textAlign: 'center',
   },
   fallbackSubtext: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(79, 70, 229, 0.7)',
     fontSize: Platform.select({ web: 10, default: 8 }),
     textAlign: 'center',
     marginTop: 4,
   },
   debugInfo: {
     position: 'absolute',
-    top: Platform.select({ web: 140, default: 120 }),
+    top: Platform.select({ web: 180, default: 160 }),
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 8,
     borderRadius: 4,
@@ -433,9 +447,9 @@ const styles = StyleSheet.create({
   },
   shimmerContainer: {
     position: 'absolute',
-    width: Platform.select({ web: 120, default: 100 }),
-    height: Platform.select({ web: 120, default: 100 }),
-    borderRadius: 20,
+    width: Platform.select({ web: 160, default: 140 }),
+    height: Platform.select({ web: 160, default: 140 }),
+    borderRadius: Platform.select({ web: 32, default: 28 }),
     overflow: 'hidden',
   },
   shimmerOverlay: {

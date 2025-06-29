@@ -163,7 +163,7 @@ const ProgressDots = ({ currentStep, totalSteps }) => {
             style={[
               styles.progressDot,
               {
-                backgroundColor: isActive ? '#6A0DAD' : '#E2E8F0',
+                backgroundColor: isActive ? '#4F46E5' : '#E2E8F0',
                 width: isActive ? 24 : 8,
               },
             ]}
@@ -353,52 +353,52 @@ const styles = StyleSheet.create({
   codeIcon1: {
     top: '25%',
     left: '10%',
-    backgroundColor: '#E6FFFA',
+    backgroundColor: '#EBF8FF',
   },
   documentIcon2: {
     bottom: '40%',
     right: '15%',
-    backgroundColor: '#FFF5F5',
+    backgroundColor: '#F0F9FF',
   },
   codeBlock: {
     width: 20,
     height: 15,
-    backgroundColor: '#4FD1C7',
+    backgroundColor: '#3B82F6',
     borderRadius: 2,
   },
   documentIcon: {
     width: 16,
     height: 20,
-    backgroundColor: '#FC8181',
+    backgroundColor: '#4F46E5',
     borderRadius: 2,
   },
   globe: {
     width: 18,
     height: 18,
-    backgroundColor: '#68D391',
+    backgroundColor: '#2563EB',
     borderRadius: 9,
   },
   // Success icons for step 3
   successIcon1: {
     top: '20%',
     right: '25%',
-    backgroundColor: '#F0FFF4',
+    backgroundColor: '#F0FDF4',
   },
   successIcon2: {
     bottom: '30%',
     left: '20%',
-    backgroundColor: '#FFFAF0',
+    backgroundColor: '#FEF3C7',
   },
   checkmark: {
     width: 16,
     height: 16,
-    backgroundColor: '#48BB78',
+    backgroundColor: '#10B981',
     borderRadius: 8,
   },
   star: {
     width: 16,
     height: 16,
-    backgroundColor: '#ED8936',
+    backgroundColor: '#F59E0B',
     borderRadius: 2,
   },
   creamFloor: {
@@ -472,13 +472,13 @@ const styles = StyleSheet.create({
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#6A0DAD',
+    backgroundColor: '#4F46E5',
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 25,
     gap: 8,
     elevation: 3,
-    shadowColor: '#6A0DAD',
+    shadowColor: '#4F46E5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

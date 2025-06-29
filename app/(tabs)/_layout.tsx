@@ -99,15 +99,16 @@ export default function TabLayout() {
           </View>
         ),
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon icon={Home} color={color} focused={focused} />
-          ),
-        }}
-      />
+<Tabs.Screen
+  name="index"
+  options={{
+    title: 'Home',
+    tabBarIcon: ({ color, focused }) => (
+      <TabIcon icon={Home} color={color} focused={focused} isFloating={true} />
+    ),
+  }}
+/>
+
       <Tabs.Screen
         name="search"
         options={{

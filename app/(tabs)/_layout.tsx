@@ -57,7 +57,6 @@ export default function TabLayout() {
         tabBarItemStyle: {
           flex: 1,
           alignItems: 'center',
-          justifyContent: 'center',
           height: '100%',
           // Add margin for better spacing
           marginHorizontal: 2,

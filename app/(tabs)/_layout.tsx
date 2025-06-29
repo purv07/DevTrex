@@ -3,7 +3,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { Chrome as Home, Search, Plus, Bell, User } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const TabIcon = ({ icon: Icon, color, focused, isFloating = false }) => {
+const TabIcon = ({ icon: Icon, color, focused, isFloating }) => {
   if (focused && isFloating) {
     return (
       <View style={styles.floatingIconWrapper}>
@@ -13,22 +13,7 @@ const TabIcon = ({ icon: Icon, color, focused, isFloating = false }) => {
           end={{ x: 1, y: 1 }}
           style={styles.floatingIconGradient}
         >
-          <Icon size={22} color="#FFFFFF" strokeWidth={2.5} />
-        </LinearGradient>
-      </View>
-    );
-  }
-
-  if (focused) {
-    return (
-      <View style={styles.activeIconContainer}>
-        <LinearGradient
-          colors={['#6366F1', '#8B5CF6']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.activeIconGradient}
-        >
-          <Icon size={22} color="#FFFFFF" strokeWidth={2.5} />
+          <Icon size={24} color="#fff" strokeWidth={2.5} />
         </LinearGradient>
       </View>
     );

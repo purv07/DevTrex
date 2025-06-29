@@ -184,7 +184,8 @@ export default function LoginScreen() {
       console.error('Google login error:', error);
       setAuthStatus('Authentication error');
       
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      // Fixed error handling to prevent null toString() error
+      const errorMessage = error instanceof Error && error.message ? error.message : 'An unexpected error occurred';
       
       if (Platform.OS !== 'web') {
         Alert.alert(

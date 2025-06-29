@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(99, 102, 241, 0.3)',
   },
-  
   activeIconGradient: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.3)',

@@ -1,68 +1,96 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, SquareCheck as CheckSquare, MessageCircle, Code, Activity, User } from 'lucide-react-native';
+import { View, StyleSheet } from 'react-native';
+import { Home, Search, Plus, Bell, User } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const TabIcon = ({ icon: Icon, color, focused }) => {
+  if (focused) {
+    return (
+      <View style={styles.activeIconContainer}>
+        <LinearGradient
+          colors={['#8B5CF6', '#A855F7', '#C084FC']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.activeIconGradient}
+        >
+          <Icon size={24} color="#FFFFFF" strokeWidth={2.5} />
+        </LinearGradient>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.inactiveIconContainer}>
+      <Icon size={24} color={color} strokeWidth={2} />
+    </View>
+  );
+};
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 80,
+          position: 'absolute',
+          bottom: 30,
+          left: 20,
+          right: 20,
+          height: 70,
+          backgroundColor: '#1F2937',
+          borderRadius: 35,
+          borderWidth: 0,
+          elevation: 20,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.3,
+          shadowRadius: 20,
+          paddingHorizontal: 10,
+          paddingVertical: 8,
         },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
+        tabBarItemStyle: {
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
         },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ size, color }) => (
-            <Home size={size} color={color} />
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={Home} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
-        name="tasks"
+        name="search"
         options={{
-          title: 'Tasks',
-          tabBarIcon: ({ size, color }) => (
-            <CheckSquare size={size} color={color} />
+          title: 'Search',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={Search} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
-        name="chat"
+        name="create"
         options={{
-          title: 'Chat',
-          tabBarIcon: ({ size, color }) => (
-            <MessageCircle size={size} color={color} />
+          title: 'Create',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={Plus} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
-        name="code"
+        name="notifications"
         options={{
-          title: 'Code',
-          tabBarIcon: ({ size, color }) => (
-            <Code size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="social"
-        options={{
-          title: 'Social',
-          tabBarIcon: ({ size, color }) => (
-            <Activity size={size} color={color} />
+          title: 'Notifications',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={Bell} color={color} focused={focused} />
           ),
         }}
       />
@@ -70,11 +98,36 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ size, color }) => (
-            <User size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={User} color={color} focused={focused} />
           ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  activeIconContainer: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    overflow: 'hidden',
+    elevation: 8,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+  },
+  activeIconGradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inactiveIconContainer: {
+    width: 54,
+    height: 54,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

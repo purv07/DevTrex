@@ -85,6 +85,8 @@ export default function TabLayout() {
           height: 70,
           // Remove margins to allow even distribution
           marginHorizontal: 0,
+          // Ensure each tab takes equal space
+          minWidth: 0,
         },
         tabBarBackground: () => (
           <View style={styles.tabBarBackground}>
@@ -192,4 +194,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
+  floatingIconWrapper: {
+  width: 65,
+  height: 65,
+  borderRadius: 32.5,
+  marginTop: -25,
+  justifyContent: 'center',
+  alignItems: 'center',
+  elevation: 10,
+  zIndex: 10,
+  backgroundColor: 'transparent',
+  shadowColor: '#6366F1',
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.5,
+  shadowRadius: 10,
+},
+
+floatingIconGradient: {
+  width: 65,
+  height: 65,
+  borderRadius: 32.5,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
 });

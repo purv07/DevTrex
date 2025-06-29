@@ -64,7 +64,7 @@ export default function TabLayout() {
         },
         // Additional styling for better icon positioning
         tabBarIconStyle: {
-          marginTop: 20,
+          marginTop: 10,
           marginBottom: 0,
         },
       }}>

@@ -8,15 +8,14 @@ WebBrowser.maybeCompleteAuthSession();
 
 // LinkedIn OAuth Configuration
 const LINKEDIN_CONFIG = {
-  clientId: 'YOUR_LINKEDIN_CLIENT_ID', // Replace with your LinkedIn Client ID
-  clientSecret: 'YOUR_LINKEDIN_CLIENT_SECRET', // Replace with your LinkedIn Client Secret
+  clientId: process.env.EXPO_PUBLIC_LINKEDIN_CLIENT_ID!,
+  clientSecret: process.env.EXPO_PUBLIC_LINKEDIN_CLIENT_SECRET!,
   redirectUri: AuthSession.makeRedirectUri({
     scheme: 'devtrex',
     path: 'auth/linkedin',
   }),
   scopes: ['openid', 'profile', 'email'],
   responseType: AuthSession.ResponseType.Code,
-  additionalParameters: {},
 };
 
 // LinkedIn OAuth URLs
@@ -35,14 +34,14 @@ export interface LinkedInUser {
   family_name?: string;
 }
 
-export interface LinkedInAuthResult {
+export interface AuthResult {
   success: boolean;
   user?: LinkedInUser;
   accessToken?: string;
   error?: string;
 }
 
-class LinkedInAuthService {
+class AuthService {
   private discovery = {
     authorizationEndpoint: LINKEDIN_ENDPOINTS.authorization,
     tokenEndpoint: LINKEDIN_ENDPOINTS.token,
@@ -52,9 +51,14 @@ class LinkedInAuthService {
   /**
    * Initiate LinkedIn OAuth flow
    */
-  async signInWithLinkedIn(): Promise<LinkedInAuthResult> {
+  async signInWithLinkedIn(): Promise<AuthResult> {
     try {
       console.log('Starting LinkedIn OAuth flow...');
+      
+      // Validate configuration
+      if (!LINKEDIN_CONFIG.clientId || LINKEDIN_CONFIG.clientId === 'your_linkedin_client_id_here') {
+        throw new Error('LinkedIn Client ID not configured. Please set EXPO_PUBLIC_LINKEDIN_CLIENT_ID in your .env file');
+      }
       
       // Create auth request
       const request = new AuthSession.AuthRequest({
@@ -62,7 +66,9 @@ class LinkedInAuthService {
         scopes: LINKEDIN_CONFIG.scopes,
         redirectUri: LINKEDIN_CONFIG.redirectUri,
         responseType: LINKEDIN_CONFIG.responseType,
-        additionalParameters: LINKEDIN_CONFIG.additionalParameters,
+        additionalParameters: {
+          state: Math.random().toString(36).substring(7), // CSRF protection
+        },
       });
 
       console.log('Auth request created:', {
@@ -249,6 +255,21 @@ class LinkedInAuthService {
   }
 
   /**
+   * Get current user info
+   */
+  async getCurrentUser(): Promise<LinkedInUser | null> {
+    try {
+      const token = await this.getStoredAccessToken();
+      if (!token) return null;
+      
+      return await this.getUserInfo(token);
+    } catch (error) {
+      console.error('Failed to get current user:', error);
+      return null;
+    }
+  }
+
+  /**
    * Sign out user
    */
   async signOut(): Promise<void> {
@@ -268,4 +289,4 @@ class LinkedInAuthService {
   }
 }
 
-export const linkedInAuth = new LinkedInAuthService();
+export const authService = new AuthService();

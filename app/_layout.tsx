@@ -14,24 +14,17 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
-import { ClerkProvider } from '@clerk/clerk-expo';
+import { authService } from '@/services/auth';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete
 SplashScreen.preventAutoHideAsync();
-
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
-if (!publishableKey) {
-  throw new Error(
-    'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env'
-  );
-}
 
 export default function RootLayout() {
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
   const [isFrameworkReady, setIsFrameworkReady] = useState(false);
   const [showCustomSplash, setShowCustomSplash] = useState(true);
   const [hasNavigated, setHasNavigated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   // Load Poppins fonts
   const [fontsLoaded, fontError] = useFonts({
@@ -52,6 +45,10 @@ export default function RootLayout() {
         // Wait a moment to ensure the native splash is visible
         await new Promise(resolve => setTimeout(resolve, 100));
         
+        // Check authentication status
+        const authenticated = await authService.isAuthenticated();
+        setIsAuthenticated(authenticated);
+        
         // Mark framework as ready
         setIsFrameworkReady(true);
         
@@ -63,6 +60,7 @@ export default function RootLayout() {
       } catch (error) {
         console.warn('Error during app initialization:', error);
         setIsFrameworkReady(true);
+        setIsAuthenticated(false);
       }
     };
 
@@ -77,8 +75,8 @@ export default function RootLayout() {
   }, [fontsLoaded, fontError]);
 
   useEffect(() => {
-    // Handle the transition from custom splash to onboarding
-    if (isAnimationFinished && isFrameworkReady && !hasNavigated && (fontsLoaded || fontError)) {
+    // Handle the transition from custom splash to appropriate screen
+    if (isAnimationFinished && isFrameworkReady && !hasNavigated && (fontsLoaded || fontError) && isAuthenticated !== null) {
       setShowCustomSplash(false);
       setHasNavigated(true);
       
@@ -87,12 +85,16 @@ export default function RootLayout() {
         SplashScreen.hideAsync();
       }
       
-      // Navigate to onboarding after a brief moment
+      // Navigate based on authentication status
       setTimeout(() => {
-        router.replace('/onboarding');
+        if (isAuthenticated) {
+          router.replace('/(tabs)');
+        } else {
+          router.replace('/onboarding');
+        }
       }, 100);
     }
-  }, [isAnimationFinished, isFrameworkReady, hasNavigated, fontsLoaded, fontError]);
+  }, [isAnimationFinished, isFrameworkReady, hasNavigated, fontsLoaded, fontError, isAuthenticated]);
 
   const handleAnimationFinish = () => {
     setIsAnimationFinished(true);
@@ -114,15 +116,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="signup" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="light" />
-    </ClerkProvider>
+    </>
   );
 }

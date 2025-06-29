@@ -20,7 +20,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Loader as Loader2 } from 'lucide-react-native';
+import { ArrowRight, Loader as Loader2, AlertCircle } from 'lucide-react-native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useOAuth } from '@clerk/clerk-expo';
@@ -101,6 +101,7 @@ const FloatingElements = () => {
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [authStatus, setAuthStatus] = useState<string>('');
+  const [error, setError] = useState<string>('');
   
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
@@ -143,9 +144,12 @@ export default function LoginScreen() {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
+      setError('');
       setAuthStatus('Connecting to Google...');
 
       console.log('Starting Google OAuth flow...');
+      console.log('Current URL:', Platform.OS === 'web' ? window.location.href : 'N/A (Mobile)');
+      console.log('Publishable Key:', process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY?.substring(0, 20) + '...');
       
       const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
       
@@ -166,8 +170,6 @@ export default function LoginScreen() {
             ]
           );
         } else {
-          // For web, show a simple alert
-          alert('Welcome! Authentication successful.');
           setTimeout(() => {
             router.replace('/(tabs)');
           }, 1000);
@@ -177,29 +179,53 @@ export default function LoginScreen() {
         if (signIn || signUp) {
           setAuthStatus('Please complete the authentication process');
         } else {
-          throw new Error('Authentication failed');
+          throw new Error('Authentication failed - no session created');
         }
       }
     } catch (error) {
       console.error('Google login error:', error);
-      setAuthStatus('Authentication error');
+      setAuthStatus('');
       
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      let errorMessage = 'An unexpected error occurred';
+      let detailedError = '';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Provide specific guidance based on error type
+        if (error.message.includes('Authentication failed')) {
+          detailedError = Platform.OS === 'web' 
+            ? 'Web OAuth configuration issue. Please check your Clerk dashboard settings.'
+            : 'Mobile OAuth configuration issue. Please verify your app settings.';
+        } else if (error.message.includes('network')) {
+          detailedError = 'Network connection issue. Please check your internet connection.';
+        } else if (error.message.includes('popup')) {
+          detailedError = 'Popup blocked. Please allow popups for this site and try again.';
+        }
+      }
+      
+      const fullErrorMessage = detailedError ? `${errorMessage}\n\n${detailedError}` : errorMessage;
+      setError(fullErrorMessage);
       
       if (Platform.OS !== 'web') {
         Alert.alert(
-          'Error',
-          errorMessage,
+          'Authentication Error',
+          fullErrorMessage,
           [{ text: 'OK', style: 'default' }]
         );
-      } else {
-        alert(`Error: ${errorMessage}`);
       }
     } finally {
       setIsLoading(false);
-      setTimeout(() => setAuthStatus(''), 3000);
+      setTimeout(() => {
+        setAuthStatus('');
+        setError('');
+      }, 5000);
     }
   };
+
+  // Check if Clerk is properly configured
+  const isClerkConfigured = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+    process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_actual_publishable_key_here';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -245,10 +271,28 @@ export default function LoginScreen() {
             </View>
           </Animated.View>
 
+          {/* Configuration Warning */}
+          {!isClerkConfigured && (
+            <View style={styles.warningContainer}>
+              <AlertCircle size={20} color="#F59E0B" />
+              <Text style={styles.warningText}>
+                Clerk not configured. Please update your .env file with a valid publishable key.
+              </Text>
+            </View>
+          )}
+
           {/* Status Message */}
           {authStatus && (
             <View style={styles.statusContainer}>
               <Text style={styles.statusText}>{authStatus}</Text>
+            </View>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <View style={styles.errorContainer}>
+              <AlertCircle size={16} color="#EF4444" />
+              <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
 
@@ -260,8 +304,12 @@ export default function LoginScreen() {
         <Animated.View style={[styles.fixedButtonContainer, buttonAnimatedStyle]}>
           <TouchableOpacity
             onPress={handleGoogleLogin}
-            style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
-            disabled={isLoading}
+            style={[
+              styles.loginButton, 
+              isLoading && styles.loginButtonLoading,
+              !isClerkConfigured && styles.loginButtonDisabled
+            ]}
+            disabled={isLoading || !isClerkConfigured}
           >
             {isLoading ? (
               <>
@@ -357,6 +405,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Poppins-Bold',
   },
+  warningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 20,
+    gap: 12,
+  },
+  warningText: {
+    flex: 1,
+    color: '#F59E0B',
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    lineHeight: 20,
+  },
   statusContainer: {
     alignItems: 'center',
     marginTop: 20,
@@ -367,10 +433,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
     textAlign: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+    borderWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 20,
+    gap: 12,
+  },
+  errorText: {
+    flex: 1,
+    color: '#EF4444',
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    lineHeight: 20,
   },
   spacer: {
     flex: 1,
@@ -406,6 +492,10 @@ const styles = StyleSheet.create({
   },
   loginButtonLoading: {
     opacity: 0.8,
+  },
+  loginButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    opacity: 0.6,
   },
   loginButtonText: {
     color: '#0F0F0F',

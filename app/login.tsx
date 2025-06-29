@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
+    position:'relative'
   },
   scrollContent: {
     flexGrow: 1,

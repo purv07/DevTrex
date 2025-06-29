@@ -14,7 +14,7 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
-import { ClerkProvider } from '@clerk/clerk-expo';
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete
 SplashScreen.preventAutoHideAsync();
@@ -27,11 +27,63 @@ if (!publishableKey) {
   );
 }
 
-export default function RootLayout() {
+// Auth-aware navigation component
+function AuthNavigator() {
+  const { isSignedIn, isLoaded } = useAuth();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
-  const [isFrameworkReady, setIsFrameworkReady] = useState(false);
   const [showCustomSplash, setShowCustomSplash] = useState(true);
   const [hasNavigated, setHasNavigated] = useState(false);
+
+  useEffect(() => {
+    // Handle navigation after authentication state is loaded and animation is finished
+    if (isLoaded && isAnimationFinished && !hasNavigated) {
+      setShowCustomSplash(false);
+      setHasNavigated(true);
+      
+      // Hide native splash on web
+      if (Platform.OS === 'web') {
+        SplashScreen.hideAsync();
+      }
+      
+      // Navigate based on authentication status
+      setTimeout(() => {
+        if (isSignedIn) {
+          // User is already logged in, go directly to dashboard
+          router.replace('/(tabs)');
+        } else {
+          // User is not logged in, show onboarding
+          router.replace('/onboarding');
+        }
+      }, 100);
+    }
+  }, [isLoaded, isAnimationFinished, hasNavigated, isSignedIn]);
+
+  const handleAnimationFinish = () => {
+    setIsAnimationFinished(true);
+  };
+
+  // Show custom splash screen while auth is loading or animation is playing
+  if (showCustomSplash || !isLoaded) {
+    return <AnimatedSplashScreen onAnimationFinish={handleAnimationFinish} />;
+  }
+
+  // Show nothing while navigating (prevents flash)
+  if (!hasNavigated) {
+    return null;
+  }
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  const [isFrameworkReady, setIsFrameworkReady] = useState(false);
 
   // Load Poppins fonts
   const [fontsLoaded, fontError] = useFonts({
@@ -76,36 +128,9 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  useEffect(() => {
-    // Handle the transition from custom splash to onboarding
-    if (isAnimationFinished && isFrameworkReady && !hasNavigated && (fontsLoaded || fontError)) {
-      setShowCustomSplash(false);
-      setHasNavigated(true);
-      
-      // Ensure native splash is hidden on web
-      if (Platform.OS === 'web') {
-        SplashScreen.hideAsync();
-      }
-      
-      // Navigate to onboarding after a brief moment
-      setTimeout(() => {
-        router.replace('/onboarding');
-      }, 100);
-    }
-  }, [isAnimationFinished, isFrameworkReady, hasNavigated, fontsLoaded, fontError]);
-
-  const handleAnimationFinish = () => {
-    setIsAnimationFinished(true);
-  };
-
   // Return null to keep splash screen visible while fonts load
   if (!fontsLoaded && !fontError) {
     return null;
-  }
-
-  // Show custom splash screen when appropriate
-  if (showCustomSplash && isFrameworkReady) {
-    return <AnimatedSplashScreen onAnimationFinish={handleAnimationFinish} />;
   }
 
   // Show nothing while framework is loading (native splash will be visible)
@@ -115,13 +140,7 @@ export default function RootLayout() {
 
   return (
     <ClerkProvider publishableKey={publishableKey}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="signup" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <AuthNavigator />
       <StatusBar style="light" />
     </ClerkProvider>
   );

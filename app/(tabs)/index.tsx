@@ -1,10 +1,32 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bell, Search, TrendingUp, Users, Code as Code2, MessageSquare, Calendar, CircleCheck as CheckCircle, ArrowRight, Activity } from 'lucide-react-native';
+import { Bell, Search, TrendingUp, Users, Code as Code2, MessageSquare, Calendar, CircleCheck as CheckCircle, ArrowRight, Activity, LogOut } from 'lucide-react-native';
+import { useAuth, useUser } from '@clerk/clerk-expo';
+import { router } from 'expo-router';
 
 export default function Dashboard() {
+  const { signOut, isSignedIn } = useAuth();
+  const { user } = useUser();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.replace('/login');
+    }
+  }, [isSignedIn]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/onboarding');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      Alert.alert('Error', 'Failed to sign out. Please try again.');
+    }
+  };
+
   const stats = [
     { label: 'Active Projects', value: '12', icon: Code2, color: '#4F46E5' },
     { label: 'Team Members', value: '24', icon: Users, color: '#3B82F6' },
@@ -18,6 +40,17 @@ export default function Dashboard() {
     { title: 'Team meeting scheduled for tomorrow', time: '6 hours ago', type: 'meeting' },
     { title: 'Code review requested by John', time: '8 hours ago', type: 'code' },
   ];
+
+  // Show loading if user data is not available yet
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +67,9 @@ export default function Dashboard() {
             </View>
             <View>
               <Text style={styles.greeting}>Good morning!</Text>
-              <Text style={styles.userName}>Welcome back to DevTrex</Text>
+              <Text style={styles.userName}>
+                Welcome back, {user.firstName || user.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User'}
+              </Text>
             </View>
           </View>
           <View style={styles.headerRight}>
@@ -45,7 +80,48 @@ export default function Dashboard() {
               <Bell size={20} color="#6B7280" />
               <View style={styles.notificationBadge} />
             </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={handleSignOut}>
+              <LogOut size={20} color="#EF4444" />
+            </TouchableOpacity>
           </View>
+        </View>
+
+        {/* User Profile Card */}
+        <View style={styles.profileCard}>
+          <LinearGradient
+            colors={['#4F46E5', '#3B82F6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.profileGradient}
+          >
+            <View style={styles.profileContent}>
+              <View style={styles.profileInfo}>
+                <View style={styles.avatarContainer}>
+                  {user.imageUrl ? (
+                    <Image source={{ uri: user.imageUrl }} style={styles.avatar} />
+                  ) : (
+                    <View style={styles.avatarPlaceholder}>
+                      <Text style={styles.avatarText}>
+                        {(user.firstName?.[0] || user.emailAddresses[0]?.emailAddress?.[0] || 'U').toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.userDetails}>
+                  <Text style={styles.profileName}>
+                    {user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User'}
+                  </Text>
+                  <Text style={styles.profileEmail}>
+                    {user.emailAddresses[0]?.emailAddress || 'No email'}
+                  </Text>
+                  <Text style={styles.profileRole}>Professional Developer</Text>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.editProfileButton}>
+                <Text style={styles.editProfileText}>Edit Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
         </View>
 
         {/* Hero Card */}
@@ -152,6 +228,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Medium',
+    color: '#6B7280',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -217,6 +303,87 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#EF4444',
+  },
+  profileCard: {
+    margin: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  profileGradient: {
+    padding: 24,
+  },
+  profileContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  profileInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatarContainer: {
+    marginRight: 16,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  avatarPlaceholder: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  avatarText: {
+    fontSize: 24,
+    fontFamily: 'Poppins-Bold',
+    color: '#FFFFFF',
+  },
+  userDetails: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Bold',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  profileEmail: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 2,
+  },
+  profileRole: {
+    fontSize: 12,
+    fontFamily: 'Poppins-Medium',
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  editProfileButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  editProfileText: {
+    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#FFFFFF',
   },
   heroCard: {
     margin: 20,

@@ -60,7 +60,7 @@ export default function TabLayout() {
           justifyContent: 'center',
           height: '100%',
           // Add margin for better spacing
-          marginHorizontal: 2,
+          marginHorizontal: 20,
         },
         // Additional styling for better icon positioning
         tabBarIconStyle: {

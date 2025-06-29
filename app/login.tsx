@@ -256,7 +256,8 @@ export default function LoginScreen() {
           <Animated.View style={[styles.headerSection, titleAnimatedStyle]}>
             <Text style={styles.mainTitle}>Create A</Text>
             <View style={styles.titleRow}>
-              <Text style={styles.mainTitle}>Better </Text><View style={styles.highlightContainer}>
+              <Text style={styles.mainTitle}>Better </Text>
+              <View style={styles.highlightContainer}>
                 <Text style={styles.highlightText}>Future</Text>
               </View>
             </View>

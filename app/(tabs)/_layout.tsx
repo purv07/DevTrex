@@ -85,8 +85,6 @@ export default function TabLayout() {
           height: 70,
           // Remove margins to allow even distribution
           marginHorizontal: 0,
-          // Ensure each tab takes equal space
-          minWidth: 0,
         },
         tabBarBackground: () => (
           <View style={styles.tabBarBackground}>
@@ -99,16 +97,15 @@ export default function TabLayout() {
           </View>
         ),
       }}>
-<Tabs.Screen
-  name="index"
-  options={{
-    title: 'Home',
-    tabBarIcon: ({ color, focused }) => (
-      <TabIcon icon={Home} color={color} focused={focused} isFloating={true} />
-    ),
-  }}
-/>
-
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={Home} color={color} focused={focused} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="search"
         options={{

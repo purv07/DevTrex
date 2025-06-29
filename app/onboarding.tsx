@@ -173,12 +173,13 @@ export default function OnboardingScreen() {
         contentOpacity.value = withTiming(1, { duration: 300 });
       });
     } else {
-      router.replace('/(tabs)');
+      // Navigate to login screen instead of tabs
+      router.replace('/login');
     }
   };
 
   const handleSkip = () => {
-    router.replace('/(tabs)');
+    router.replace('/login');
   };
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({

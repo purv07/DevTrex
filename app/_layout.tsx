@@ -35,7 +35,50 @@ function AuthNavigator() {
   const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
-    // Handle navigation after authentication state is loaded and animation is finished
+    // Handle navigation logic
+    if (isLoaded && !hasNavigated) {
+      if (isSignedIn) {
+        // User is already logged in - skip onboarding and login
+        console.log('User is already signed in, navigating to dashboard...');
+        
+        // If animation is finished, navigate immediately
+        if (isAnimationFinished) {
+          setShowCustomSplash(false);
+          setHasNavigated(true);
+          
+          // Hide native splash on web
+          if (Platform.OS === 'web') {
+            SplashScreen.hideAsync();
+          }
+          
+          setTimeout(() => {
+            router.replace('/(tabs)');
+          }, 100);
+        }
+        // If animation is not finished, it will be handled in the next useEffect
+      } else {
+        // User is not logged in - show onboarding after animation
+        console.log('User is not signed in, will show onboarding...');
+        
+        if (isAnimationFinished) {
+          setShowCustomSplash(false);
+          setHasNavigated(true);
+          
+          // Hide native splash on web
+          if (Platform.OS === 'web') {
+            SplashScreen.hideAsync();
+          }
+          
+          setTimeout(() => {
+            router.replace('/onboarding');
+          }, 100);
+        }
+      }
+    }
+  }, [isLoaded, isSignedIn, isAnimationFinished, hasNavigated]);
+
+  // Handle navigation when animation finishes (for already loaded auth state)
+  useEffect(() => {
     if (isLoaded && isAnimationFinished && !hasNavigated) {
       setShowCustomSplash(false);
       setHasNavigated(true);
@@ -45,31 +88,26 @@ function AuthNavigator() {
         SplashScreen.hideAsync();
       }
       
-      // Navigate based on authentication status
       setTimeout(() => {
         if (isSignedIn) {
-          // User is already logged in, go directly to dashboard
+          console.log('Animation finished, user signed in - going to dashboard');
           router.replace('/(tabs)');
         } else {
-          // User is not logged in, show onboarding
+          console.log('Animation finished, user not signed in - going to onboarding');
           router.replace('/onboarding');
         }
       }, 100);
     }
-  }, [isLoaded, isAnimationFinished, hasNavigated, isSignedIn]);
+  }, [isLoaded, isSignedIn, isAnimationFinished, hasNavigated]);
 
   const handleAnimationFinish = () => {
+    console.log('Animation finished, auth loaded:', isLoaded, 'signed in:', isSignedIn);
     setIsAnimationFinished(true);
   };
 
   // Show custom splash screen while auth is loading or animation is playing
-  if (showCustomSplash || !isLoaded) {
+  if (showCustomSplash || !isLoaded || !hasNavigated) {
     return <AnimatedSplashScreen onAnimationFinish={handleAnimationFinish} />;
-  }
-
-  // Show nothing while navigating (prevents flash)
-  if (!hasNavigated) {
-    return null;
   }
 
   return (

@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   ScrollView,
-  Image,
+  Alert,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -20,12 +20,16 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Loader as Loader2, Linkedin } from 'lucide-react-native';
+import { ArrowRight, Loader as Loader2 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import { authService } from '@/services/auth';
+import { useOAuth } from '@clerk/clerk-expo';
+import * as WebBrowser from 'expo-web-browser';
 
 const { width, height } = Dimensions.get('window');
+
+// Complete the auth session for web
+WebBrowser.maybeCompleteAuthSession();
 
 // --- Floating Elements Component ---
 const FloatingElements = () => {
@@ -97,7 +101,8 @@ const FloatingElements = () => {
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [authStatus, setAuthStatus] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+  
+  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
@@ -135,35 +140,61 @@ export default function LoginScreen() {
     transform: [{ scale: lottieScale.value }],
   }));
 
-  const handleLinkedInLogin = async () => {
+  const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      setError(null);
-      setAuthStatus('Connecting to LinkedIn...');
+      setAuthStatus('Connecting to Google...');
 
-      console.log('Starting LinkedIn OAuth flow...');
+      console.log('Starting Google OAuth flow...');
       
-      const result = await authService.signInWithLinkedIn();
+      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
       
-      if (result.success && result.user) {
+      if (createdSessionId) {
+        setActive!({ session: createdSessionId });
         setAuthStatus('Authentication successful!');
         
-        // Show success message and navigate
-        setTimeout(() => {
-          router.replace('/(tabs)');
-        }, 1000);
+        // Show success message
+        if (Platform.OS !== 'web') {
+          Alert.alert(
+            'Welcome!',
+            'You have successfully signed in with Google.',
+            [
+              {
+                text: 'Continue',
+                onPress: () => router.replace('/(tabs)'),
+              },
+            ]
+          );
+        } else {
+          // For web, show a simple alert
+          alert('Welcome! Authentication successful.');
+          setTimeout(() => {
+            router.replace('/(tabs)');
+          }, 1000);
+        }
       } else {
-        throw new Error(result.error || 'Authentication failed');
+        // Handle sign-in or sign-up
+        if (signIn || signUp) {
+          setAuthStatus('Please complete the authentication process');
+        } else {
+          throw new Error('Authentication failed');
+        }
       }
     } catch (error) {
-      console.error('LinkedIn login error:', error);
-      setAuthStatus('');
+      console.error('Google login error:', error);
+      setAuthStatus('Authentication error');
       
-      const errorMessage = error instanceof Error && error.message ? error.message : 'An unexpected error occurred';
-      setError(errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       
-      // Clear error after 5 seconds
-      setTimeout(() => setError(null), 5000);
+      if (Platform.OS !== 'web') {
+        Alert.alert(
+          'Error',
+          errorMessage,
+          [{ text: 'OK', style: 'default' }]
+        );
+      } else {
+        alert(`Error: ${errorMessage}`);
+      }
     } finally {
       setIsLoading(false);
       setTimeout(() => setAuthStatus(''), 3000);
@@ -197,30 +228,23 @@ export default function LoginScreen() {
 
           {/* Header Section */}
           <Animated.View style={[styles.headerSection, titleAnimatedStyle]}>
-            <Text style={styles.mainTitle}>Connect Your</Text>
+            <Text style={styles.mainTitle}>Create A</Text>
             <View style={styles.titleRow}>
-              <Text style={styles.mainTitle}>Professional </Text>
+              <Text style={styles.mainTitle}>Better </Text>
               <View style={styles.highlightContainer}>
-                <Text style={styles.highlightText}>Network</Text>
+                <Text style={styles.highlightText}>Future</Text>
               </View>
             </View>
-            <Text style={styles.mainTitle}>With DevTrex</Text>
+            <Text style={styles.mainTitle}>For Yourself</Text>
             
-            {/* LinkedIn branding */}
-            <View style={styles.linkedinBranding}>
-              <Text style={styles.linkedinText}>Powered by</Text>
-              <View style={styles.linkedinLogo}>
-                <Linkedin size={20} color="#FFFFFF" />
+            {/* Google branding */}
+            <View style={styles.googleBranding}>
+              <Text style={styles.googleText}>Powered by</Text>
+              <View style={styles.googleLogo}>
+                <Text style={styles.googleLogoText}>G</Text>
               </View>
             </View>
           </Animated.View>
-
-          {/* Error Message */}
-          {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          )}
 
           {/* Status Message */}
           {authStatus && (
@@ -236,7 +260,7 @@ export default function LoginScreen() {
         {/* Fixed Button at Bottom - Positioned over animation */}
         <Animated.View style={[styles.fixedButtonContainer, buttonAnimatedStyle]}>
           <TouchableOpacity
-            onPress={handleLinkedInLogin}
+            onPress={handleGoogleLogin}
             style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
             disabled={isLoading}
           >
@@ -247,16 +271,15 @@ export default function LoginScreen() {
               </>
             ) : (
               <>
-                <Linkedin size={20} color="#0F0F0F" />
-                <Text style={styles.loginButtonText}>Continue with LinkedIn</Text>
+                <Text style={styles.loginButtonText}>Start Now</Text>
                 <ArrowRight size={20} color="#0F0F0F" />
               </>
             )}
           </TouchableOpacity>
           
-          {/* LinkedIn attribution */}
+          {/* Google attribution */}
           <Text style={styles.attributionText}>
-            Sign in with LinkedIn to access your professional network
+            Sign in with Google to continue
           </Text>
         </Animated.View>
       </KeyboardAvoidingView>
@@ -282,9 +305,9 @@ const styles = StyleSheet.create({
   },
   floatingElement: {
     position: 'absolute',
-    backgroundColor: 'rgba(0, 119, 181, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 119, 181, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   headerSection: {
     alignItems: 'center',
@@ -303,7 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   highlightContainer: {
-    backgroundColor: '#0077B5',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderRadius: 12,
@@ -312,44 +335,32 @@ const styles = StyleSheet.create({
   highlightText: {
     fontSize: 32,
     fontFamily: 'Poppins-Bold',
-    color: '#FFFFFF',
+    color: '#0F0F0F',
     lineHeight: 40,
   },
-  linkedinBranding: {
+  googleBranding: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
     gap: 8,
   },
-  linkedinText: {
+  googleText: {
     color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
   },
-  linkedinLogo: {
-    backgroundColor: '#0077B5',
-    width: 32,
-    height: 32,
-    borderRadius: 6,
+  googleLogo: {
+    backgroundColor: '#4285F4',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  errorContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-  errorText: {
-    color: '#FF6B6B',
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium',
-    textAlign: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.3)',
+  googleLogoText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: 'Poppins-Bold',
   },
   statusContainer: {
     alignItems: 'center',
@@ -357,16 +368,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   statusText: {
-    color: '#4ECDC4',
+    color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
     textAlign: 'center',
-    backgroundColor: 'rgba(78, 205, 196, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(78, 205, 196, 0.3)',
   },
   spacer: {
     flex: 1,
@@ -392,12 +401,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 25,
     gap: 12,
-    shadowColor: '#0077B5',
+    shadowColor: '#FFFFFF',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 20, // High elevation for Android
-    minWidth: width * 0.8,
+    minWidth: width * 0.6,
     zIndex: 60, // Ensure button is on top
   },
   loginButtonLoading: {

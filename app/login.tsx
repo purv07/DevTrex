@@ -262,13 +262,6 @@ export default function LoginScreen() {
               </Text>
               {!isLoading && <ArrowRight size={20} color="#0F0F0F" />}
             </TouchableOpacity>
-
-            <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/signup')}>
-                <Text style={styles.signupLink}>Sign Up</Text>
-              </TouchableOpacity>
-            </View>
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -371,7 +364,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 12,
-    marginBottom: 24,
   },
   loginButtonLoading: {
     opacity: 0.8,
@@ -380,21 +372,5 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  signupText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-  },
-  signupLink: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Poppins-SemiBold',
-    textDecorationLine: 'underline',
   },
 });

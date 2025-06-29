@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
-import { Chrome as Home, Search, Plus, Bell, User } from 'lucide-react-native';
+import { Home, Search, Plus, Bell, User } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const TabIcon = ({ icon: Icon, color, focused }) => {
@@ -52,19 +52,25 @@ export default function TabLayout() {
           shadowOffset: { width: 0, height: 15 },
           shadowOpacity: 0.4,
           shadowRadius: 25,
-          paddingHorizontal: 15,
-          paddingVertical: 10,
-          // Add subtle border for premium look
+          // Remove horizontal padding to allow full width distribution
+          paddingHorizontal: 0,
+          paddingVertical: 0,
           borderTopWidth: 1,
           borderTopColor: 'rgba(255, 255, 255, 0.1)',
+          // Ensure proper flex distribution
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
         },
         tabBarItemStyle: {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100%',
-          borderRadius: 25,
-          marginHorizontal: 2,
+          height: 70,
+          // Remove margins to allow even distribution
+          marginHorizontal: 0,
+          // Ensure each tab takes equal space
+          minWidth: 0,
         },
         tabBarBackground: () => (
           <View style={styles.tabBarBackground}>
@@ -150,7 +156,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,
     shadowRadius: 15,
-    // Add subtle glow effect
     borderWidth: 2,
     borderColor: 'rgba(99, 102, 241, 0.3)',
   },
@@ -158,7 +163,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // Add inner shadow effect
     shadowColor: 'rgba(0, 0, 0, 0.3)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
@@ -170,7 +174,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 25,
-    // Add subtle hover effect
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',

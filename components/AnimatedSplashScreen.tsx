@@ -253,7 +253,7 @@ export default function AnimatedSplashScreen({ onAnimationFinish }) {
       return (
         <View style={styles.fallbackLogo}>
           <Text style={styles.fallbackLogoText}>DevTrex</Text>
-          <Text style={styles.fallbackSubtext}>Logo Error</Text>
+          <Text style={styles.fallbackSubtext}>Professional</Text>
         </View>
       );
     }
@@ -262,7 +262,7 @@ export default function AnimatedSplashScreen({ onAnimationFinish }) {
     return (
       <View style={styles.logoWrapper}>
         <Image
-          source={require('../assets/images/Blue White Professional Minimal Brand Logo.png')}
+          source={require('../assets/images/new-logo.png')}
           style={styles.logo}
           resizeMode="contain"
           onError={handleImageError}

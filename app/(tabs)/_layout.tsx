@@ -33,6 +33,7 @@ export default function TabLayout() {
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingHorizontal: 15,
+           paddingVertical: 15,
           borderTopWidth: 0,
           elevation: 20,
           shadowColor: '#000',
@@ -42,6 +43,7 @@ export default function TabLayout() {
         },
         tabBarItemStyle: {
           flex: 1,
+          alignItems: 'center',
           justifyContent: 'center',
         },
       }}

@@ -20,7 +20,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Loader2 } from 'lucide-react-native';
+import { ArrowRight, Loader as Loader2 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { linkedInAuth, LinkedInAuthResult } from '../services/linkedinAuth';

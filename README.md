@@ -4,7 +4,7 @@ A modern React Native app built with Expo Router featuring Clerk authentication 
 
 ## Features
 
-- 🚀 **Clerk Authentication** - Secure authentication with Google OAuth
+- 🚀 **Clerk Authentication** - Secure authentication with LinkedIn OAuth
 - 🎨 **Beautiful Animations** - Smooth Lottie animations and React Native Reanimated
 - 📱 **Cross-Platform** - Works on iOS, Android, and Web
 - 🎯 **Modern UI** - Clean, professional design with Poppins fonts
@@ -38,17 +38,17 @@ EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_actual_key_here
    - `https://localhost:8081` (if using HTTPS)
 
 3. Go to **"User & Authentication"** > **"Social Connections"**
-4. Click on **"Google"** and ensure it's enabled
-5. In Google OAuth settings, add these redirect URLs:
+4. Click on **"LinkedIn"** and ensure it's enabled
+5. In LinkedIn OAuth settings, add these redirect URLs:
    - `http://localhost:8081`
    - `http://localhost:19006`
    - Your actual development server URL
 
-### Step 4: Enable Google OAuth
+### Step 4: Enable LinkedIn OAuth
 
 1. In Clerk Dashboard, go to **"User & Authentication"** > **"Social Connections"**
-2. Enable **Google** OAuth provider
-3. Configure your Google OAuth credentials (Client ID and Secret)
+2. Enable **LinkedIn** OAuth provider
+3. Configure your LinkedIn OAuth credentials (Client ID and Secret)
 
 ### Step 5: Run the App
 
@@ -65,7 +65,7 @@ This is usually caused by domain configuration issues:
 
 1. **Check your development server URL** - Note the exact URL in your browser (e.g., `http://localhost:8081`)
 2. **Add to Clerk Domains** - In Clerk Dashboard > Domains, add your exact development URL
-3. **Update Google OAuth** - In Clerk Dashboard > Social Connections > Google, ensure redirect URLs match
+3. **Update LinkedIn OAuth** - In Clerk Dashboard > Social Connections > LinkedIn, ensure redirect URLs match
 4. **Clear browser cache** - Clear cookies and local storage for your development site
 5. **Restart dev server** - Stop and restart `npm run dev`
 
@@ -85,6 +85,12 @@ This is usually caused by domain configuration issues:
 
 - **Bundle identifier**: Ensure your app's bundle ID matches your OAuth configuration
 - **Deep linking**: Verify your app's URL scheme is properly configured
+
+### LinkedIn OAuth Specific Issues
+
+- **"oauth_linkedin_oidc does not match one of the allowed values"**: Ensure LinkedIn OAuth is enabled in your Clerk Dashboard
+- **LinkedIn app configuration**: Make sure your LinkedIn app has the correct redirect URLs configured
+- **Scopes**: Verify that your LinkedIn app has the necessary scopes (openid, profile, email)
 
 ## Project Structure
 

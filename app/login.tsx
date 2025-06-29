@@ -103,7 +103,7 @@ export default function LoginScreen() {
   const [authStatus, setAuthStatus] = useState<string>('');
   const [error, setError] = useState<string>('');
   
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
+  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_linkedin_oidc' });
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
@@ -141,13 +141,13 @@ export default function LoginScreen() {
     transform: [{ scale: lottieScale.value }],
   }));
 
-  const handleGoogleLogin = async () => {
+  const handleLinkedInLogin = async () => {
     try {
       setIsLoading(true);
       setError('');
-      setAuthStatus('Connecting to Google...');
+      setAuthStatus('Connecting to LinkedIn...');
 
-      console.log('Starting Google OAuth flow...');
+      console.log('Starting LinkedIn OAuth flow...');
       console.log('Current URL:', Platform.OS === 'web' ? window.location.href : 'N/A (Mobile)');
       console.log('Publishable Key:', process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY?.substring(0, 20) + '...');
       
@@ -161,7 +161,7 @@ export default function LoginScreen() {
         if (Platform.OS !== 'web') {
           Alert.alert(
             'Welcome!',
-            'You have successfully signed in with Google.',
+            'You have successfully signed in with LinkedIn.',
             [
               {
                 text: 'Continue',
@@ -183,7 +183,7 @@ export default function LoginScreen() {
         }
       }
     } catch (error) {
-      console.error('Google login error:', error);
+      console.error('LinkedIn login error:', error);
       setAuthStatus('');
       
       let errorMessage = 'An unexpected error occurred';
@@ -201,6 +201,8 @@ export default function LoginScreen() {
           detailedError = 'Network connection issue. Please check your internet connection.';
         } else if (error.message.includes('popup')) {
           detailedError = 'Popup blocked. Please allow popups for this site and try again.';
+        } else if (error.message.includes('oauth_linkedin_oidc')) {
+          detailedError = 'LinkedIn OAuth not properly configured in Clerk Dashboard.';
         }
       }
       
@@ -263,11 +265,11 @@ export default function LoginScreen() {
             </View>
             <Text style={styles.mainTitle}>For Yourself</Text>
             
-            {/* Google branding */}
-            <View style={styles.googleBranding}>
-              <Text style={styles.googleText}>Powered by</Text>
-              <View style={styles.googleLogo}>
-                <Text style={styles.googleLogoText}>G</Text>
+            {/* LinkedIn branding */}
+            <View style={styles.linkedinBranding}>
+              <Text style={styles.linkedinText}>Powered by</Text>
+              <View style={styles.linkedinLogo}>
+                <Text style={styles.linkedinLogoText}>in</Text>
               </View>
             </View>
           </Animated.View>
@@ -304,7 +306,7 @@ export default function LoginScreen() {
         {/* Fixed Button at Bottom - Positioned over animation */}
         <Animated.View style={[styles.fixedButtonContainer, buttonAnimatedStyle]}>
           <TouchableOpacity
-            onPress={handleGoogleLogin}
+            onPress={handleLinkedInLogin}
             style={[
               styles.loginButton, 
               isLoading && styles.loginButtonLoading,
@@ -324,7 +326,11 @@ export default function LoginScreen() {
               </>
             )}
           </TouchableOpacity>
-          <Text style={styles.attributionText}>Sign in with Google to continue</Text>
+          
+          {/* LinkedIn attribution */}
+          <Text style={styles.attributionText}>
+            Sign in with LinkedIn to continue
+          </Text>
         </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -382,26 +388,26 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     lineHeight: 40,
   },
-  googleBranding: {
+  linkedinBranding: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
     gap: 8,
   },
-  googleText: {
+  linkedinText: {
     color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
   },
-  googleLogo: {
-    backgroundColor: '#4285F4',
+  linkedinLogo: {
+    backgroundColor: '#0077B5',
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  googleLogoText: {
+  linkedinLogoText: {
     color: '#FFFFFF',
     fontSize: 12,
     fontFamily: 'Poppins-Bold',

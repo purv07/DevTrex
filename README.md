@@ -1,43 +1,41 @@
 # DevTrex - Professional Development Platform
 
-A modern React Native app built with Expo Router featuring LinkedIn OAuth authentication and beautiful animations.
+A modern React Native app built with Expo Router featuring Clerk authentication and beautiful animations.
 
 ## Features
 
-- 🚀 **LinkedIn OAuth Integration** - Secure authentication with LinkedIn
+- 🚀 **Clerk Authentication** - Secure authentication with Google OAuth
 - 🎨 **Beautiful Animations** - Smooth Lottie animations and React Native Reanimated
 - 📱 **Cross-Platform** - Works on iOS, Android, and Web
 - 🎯 **Modern UI** - Clean, professional design with Poppins fonts
-- 🔐 **Secure Storage** - Token management with Expo SecureStore
+- 🔐 **Secure Storage** - Token management with Clerk
 
 ## Setup Instructions
 
-### 1. LinkedIn OAuth Configuration
+### 1. Clerk Configuration
 
-To enable LinkedIn authentication, you need to:
+To enable authentication, you need to:
 
-1. **Create a LinkedIn App:**
-   - Go to [LinkedIn Developer Portal](https://www.linkedin.com/developers/)
-   - Create a new app
-   - Note your Client ID and Client Secret
+1. **Create a Clerk Application:**
+   - Go to [Clerk Dashboard](https://dashboard.clerk.com/)
+   - Create a new application
+   - Note your Publishable Key
 
-2. **Configure Redirect URI:**
-   - In your LinkedIn app settings, add the redirect URI:
-   - For development: `exp://localhost:19000/--/auth/linkedin`
-   - For production: `devtrex://auth/linkedin`
+2. **Configure OAuth Provider:**
+   - In your Clerk dashboard, go to "User & Authentication" > "Social Connections"
+   - Enable Google OAuth
+   - Configure your Google OAuth credentials
 
-3. **Update Configuration:**
-   - Open `services/linkedinAuth.ts`
-   - Replace `YOUR_LINKEDIN_CLIENT_ID` with your actual Client ID
-   - Replace `YOUR_LINKEDIN_CLIENT_SECRET` with your actual Client Secret
+3. **Update Environment Variables:**
+   - Open `.env` file in the root directory
+   - Replace `your_clerk_publishable_key_here` with your actual Clerk Publishable Key
 
 ### 2. Environment Setup
 
-Create a `.env` file in the root directory:
+Update the `.env` file in the root directory:
 
 ```env
-LINKEDIN_CLIENT_ID=your_linkedin_client_id
-LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key
 ```
 
 ### 3. Installation
@@ -57,74 +55,65 @@ npm run dev
 ```
 ├── app/                    # App routes (Expo Router)
 │   ├── (tabs)/            # Tab navigation
-│   ├── login.tsx          # Login screen with LinkedIn OAuth
+│   ├── login.tsx          # Login screen with Clerk OAuth
 │   └── onboarding.tsx     # Onboarding flow
 ├── components/            # Reusable components
-├── services/              # API services
-│   └── linkedinAuth.ts    # LinkedIn OAuth service
 ├── assets/                # Images and animations
 └── hooks/                 # Custom hooks
 ```
 
-## LinkedIn OAuth Flow
+## Clerk OAuth Flow
 
 1. User taps "Start Now" button
-2. App opens LinkedIn OAuth in browser
+2. Clerk opens Google OAuth in browser
 3. User authorizes the app
-4. App receives authorization code
-5. Code is exchanged for access token
-6. User profile is fetched from LinkedIn API
-7. Tokens are stored securely
-8. User is redirected to main app
+4. Clerk handles the authentication process
+5. User is redirected to main app with session
 
 ## Key Dependencies
 
-- **expo-auth-session** - OAuth authentication
+- **@clerk/clerk-expo** - Authentication and user management
 - **expo-web-browser** - In-app browser for OAuth
-- **expo-secure-store** - Secure token storage
 - **lottie-react-native** - Animations
 - **react-native-reanimated** - Advanced animations
 - **lucide-react-native** - Icons
 
 ## Security Notes
 
-- Client secrets should never be exposed in client-side code
-- Use environment variables for sensitive configuration
-- Tokens are stored securely using Expo SecureStore
-- OAuth flow uses PKCE for additional security
+- Publishable keys are safe to expose in client-side code
+- Clerk handles all sensitive authentication logic server-side
+- Sessions are managed securely by Clerk
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **"Invalid redirect URI"**
-   - Ensure your LinkedIn app has the correct redirect URI configured
-   - Check that the scheme matches your app.json configuration
+1. **"Missing Publishable Key"**
+   - Ensure your `.env` file has the correct Clerk publishable key
+   - Restart the development server after updating environment variables
 
-2. **"Client ID not found"**
-   - Verify your LinkedIn Client ID is correctly set in the service
-   - Ensure your LinkedIn app is active
+2. **OAuth not working**
+   - Verify Google OAuth is enabled in your Clerk dashboard
+   - Check that your OAuth provider is properly configured
 
 3. **Authentication fails on web**
-   - Web OAuth requires additional CORS configuration
-   - Consider using a development build for testing
+   - Ensure your Clerk application allows web origins
+   - Check browser console for any CORS errors
 
 ### Debug Mode
 
-Enable debug logging by adding this to your LinkedIn auth service:
+Enable debug logging by checking the Clerk dashboard logs and using:
 
 ```typescript
-console.log('LinkedIn OAuth Debug:', {
-  clientId: LINKEDIN_CONFIG.clientId,
-  redirectUri: LINKEDIN_CONFIG.redirectUri,
-  scopes: LINKEDIN_CONFIG.scopes,
+console.log('Clerk OAuth Debug:', {
+  publishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY,
 });
 ```
 
 ## Production Deployment
 
-1. Update redirect URIs in LinkedIn app settings
-2. Configure production environment variables
+1. Update environment variables for production
+2. Configure production domains in Clerk dashboard
 3. Test OAuth flow thoroughly
 4. Ensure proper error handling
 

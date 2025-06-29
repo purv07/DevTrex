@@ -37,13 +37,7 @@
     "plugins": [
       "expo-router", 
       "expo-font", 
-      "expo-web-browser",
-      [
-        "expo-auth-session",
-        {
-          "schemes": ["devtrex"]
-        }
-      ]
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

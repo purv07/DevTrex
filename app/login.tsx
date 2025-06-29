@@ -23,9 +23,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Loader as Loader2 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import { linkedInAuth, LinkedInAuthResult } from '../services/linkedinAuth';
+import { useOAuth } from '@clerk/clerk-expo';
+import * as WebBrowser from 'expo-web-browser';
 
 const { width, height } = Dimensions.get('window');
+
+// Complete the auth session for web
+WebBrowser.maybeCompleteAuthSession();
 
 // --- Floating Elements Component ---
 const FloatingElements = () => {
@@ -97,6 +101,8 @@ const FloatingElements = () => {
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [authStatus, setAuthStatus] = useState<string>('');
+  
+  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
   const titleOpacity = useSharedValue(0);
   const titleTranslateY = useSharedValue(30);
@@ -134,25 +140,24 @@ export default function LoginScreen() {
     transform: [{ scale: lottieScale.value }],
   }));
 
-  const handleLinkedInLogin = async () => {
+  const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      setAuthStatus('Connecting to LinkedIn...');
+      setAuthStatus('Connecting to Google...');
 
-      console.log('Starting LinkedIn authentication...');
+      console.log('Starting Google OAuth flow...');
       
-      const result: LinkedInAuthResult = await linkedInAuth.signInWithLinkedIn();
+      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
       
-      console.log('LinkedIn auth result:', result);
-
-      if (result.success && result.user) {
+      if (createdSessionId) {
+        setActive!({ session: createdSessionId });
         setAuthStatus('Authentication successful!');
         
         // Show success message
         if (Platform.OS !== 'web') {
           Alert.alert(
             'Welcome!',
-            `Hello ${result.user.name}! You have successfully signed in with LinkedIn.`,
+            'You have successfully signed in with Google.',
             [
               {
                 text: 'Continue',
@@ -162,29 +167,21 @@ export default function LoginScreen() {
           );
         } else {
           // For web, show a simple alert
-          alert(`Welcome ${result.user.name}! Authentication successful.`);
+          alert('Welcome! Authentication successful.');
           setTimeout(() => {
             router.replace('/(tabs)');
           }, 1000);
         }
       } else {
-        setAuthStatus('Authentication failed');
-        
-        const errorMessage = result.error || 'Unknown error occurred';
-        console.error('LinkedIn authentication failed:', errorMessage);
-        
-        if (Platform.OS !== 'web') {
-          Alert.alert(
-            'Authentication Failed',
-            errorMessage,
-            [{ text: 'Try Again', style: 'default' }]
-          );
+        // Handle sign-in or sign-up
+        if (signIn || signUp) {
+          setAuthStatus('Please complete the authentication process');
         } else {
-          alert(`Authentication failed: ${errorMessage}`);
+          throw new Error('Authentication failed');
         }
       }
     } catch (error) {
-      console.error('LinkedIn login error:', error);
+      console.error('Google login error:', error);
       setAuthStatus('Authentication error');
       
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -240,11 +237,11 @@ export default function LoginScreen() {
             </View>
             <Text style={styles.mainTitle}>For Yourself</Text>
             
-            {/* LinkedIn branding */}
-            <View style={styles.linkedinBranding}>
-              <Text style={styles.linkedinText}>Powered by</Text>
-              <View style={styles.linkedinLogo}>
-                <Text style={styles.linkedinLogoText}>in</Text>
+            {/* Google branding */}
+            <View style={styles.googleBranding}>
+              <Text style={styles.googleText}>Powered by</Text>
+              <View style={styles.googleLogo}>
+                <Text style={styles.googleLogoText}>G</Text>
               </View>
             </View>
           </Animated.View>
@@ -263,7 +260,7 @@ export default function LoginScreen() {
         {/* Fixed Button at Bottom - Positioned over animation */}
         <Animated.View style={[styles.fixedButtonContainer, buttonAnimatedStyle]}>
           <TouchableOpacity
-            onPress={handleLinkedInLogin}
+            onPress={handleGoogleLogin}
             style={[styles.loginButton, isLoading && styles.loginButtonLoading]}
             disabled={isLoading}
           >
@@ -280,9 +277,9 @@ export default function LoginScreen() {
             )}
           </TouchableOpacity>
           
-          {/* LinkedIn attribution */}
+          {/* Google attribution */}
           <Text style={styles.attributionText}>
-            Sign in with LinkedIn to continue
+            Sign in with Google to continue
           </Text>
         </Animated.View>
       </KeyboardAvoidingView>
@@ -341,26 +338,26 @@ const styles = StyleSheet.create({
     color: '#0F0F0F',
     lineHeight: 40,
   },
-  linkedinBranding: {
+  googleBranding: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
     gap: 8,
   },
-  linkedinText: {
+  googleText: {
     color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
   },
-  linkedinLogo: {
-    backgroundColor: '#0077B5',
+  googleLogo: {
+    backgroundColor: '#4285F4',
     width: 24,
     height: 24,
-    borderRadius: 4,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  linkedinLogoText: {
+  googleLogoText: {
     color: '#FFFFFF',
     fontSize: 12,
     fontFamily: 'Poppins-Bold',

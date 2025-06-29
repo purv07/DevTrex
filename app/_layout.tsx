@@ -14,9 +14,18 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
+import { ClerkProvider } from '@clerk/clerk-expo';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete
 SplashScreen.preventAutoHideAsync();
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+if (!publishableKey) {
+  throw new Error(
+    'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env'
+  );
+}
 
 export default function RootLayout() {
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
@@ -105,7 +114,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ClerkProvider publishableKey={publishableKey}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
@@ -114,6 +123,6 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="light" />
-    </>
+    </ClerkProvider>
   );
 }

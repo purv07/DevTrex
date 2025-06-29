@@ -161,7 +161,6 @@ const styles = StyleSheet.create({
   },
   
   activeIconGradient: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.3)',
